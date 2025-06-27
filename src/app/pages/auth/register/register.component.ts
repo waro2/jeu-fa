@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ApiService } from '../../../services/api.service';
 
 @Component({
     selector: 'app-register',
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
 export class RegisterComponent {
     form: FormGroup;
 
-    constructor(private fb: FormBuilder, private router: Router) {
+    constructor(private fb: FormBuilder, private router: Router, private api: ApiService) {
         this.form = this.fb.group({
             username: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
@@ -24,10 +25,30 @@ export class RegisterComponent {
 
     onSubmit() {
         if (this.form.valid) {
-            // Traitement de l'inscription ou affichage des valeurs
             console.log(this.form.value);
-            // Redirection vers la page de login
-            this.router.navigate(['/login']);
+            this.register();
         }
+    }
+
+    register() {
+        // API call to register the user can be added here
+        console.log('User registered:', this.form.value);
+        const payload = {
+            username: this.form.value.username,
+            email: this.form.value.email,
+            password: this.form.value.password,
+            confirmPassword: this.form.value.passwordConfirm
+        };
+
+        this.api.register(payload).subscribe({
+            next: (response) => {
+                console.log('Registration successful:', response);
+                this.router.navigate(['/login']);
+            },
+            error: (error) => {
+                console.error('Registration failed:', error);
+            }
+        });
+
     }
 }

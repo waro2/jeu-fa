@@ -133,13 +133,8 @@ export class ApiService {
         return this.http.post(`${this.baseUrl}/auth/login`, formData);
     }
 
-    register(username: string, email: string, password: string, confirmPassword: string) {
-        return this.http.post(`${this.baseUrl}/auth/register`, {
-            username,
-            email,
-            password,
-            confirm_password: confirmPassword
-        });
+    register(data: { username: string, email: string, password: string, confirmPassword: string }) {
+        return this.http.post(`${this.baseUrl}/auth/register`, data);
     }
 
     getMe(token: string) {
