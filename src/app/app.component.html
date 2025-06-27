@@ -1,3 +1,8 @@
 <app-header />
+<div style="padding: 1em; text-align: center;">
+    <button (click)="sendTest()" style="margin-bottom: 1em;">Envoyer message WebSocket</button>
+    <div>Status WebSocket: {{ status }}</div>
+    <div *ngFor="let msg of messages">Message reçu: {{ msg | json }}</div>
+</div>
 <router-outlet />
 <app-footer />

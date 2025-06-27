@@ -22,6 +22,11 @@ export class LoginComponent {
         });
     }
 
+    /**
+     * 
+     * {username: 'alfawaro86', email: 'alfawaro86@gmail.com', password: 'F@fffff1', passwordConfirm: 'F@fffff1'}
+     */
+
     onSubmit() {
         this.errorMessage = null;
         if (this.form.valid) {

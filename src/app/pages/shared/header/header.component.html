@@ -6,8 +6,8 @@
         </div>
         <nav class="nav-menu">
             <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
-            <a routerLink="/matchmaking" routerLinkActive="active">Matchmaking</a>
-            <a routerLink="/game-board" routerLinkActive="active">Jeu</a>
+            <a *ngIf="isLoggedIn" routerLink="/matchmaking" routerLinkActive="active">Matchmaking</a>
+            <a *ngIf="isLoggedIn" routerLink="/game-board" routerLinkActive="active">Jeu</a>
             <a *ngIf="!isLoggedIn" routerLink="/login" routerLinkActive="active">Connexion</a>
             <a *ngIf="!isLoggedIn && !router.url.includes('login')" routerLink="/register"
                 routerLinkActive="active">Inscription</a>
