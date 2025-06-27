@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ApiService } from '../../../services/api.service';
 
 @Component({
     selector: 'app-login',
@@ -12,8 +13,9 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
     form: FormGroup;
+    errorMessage: string | null = null;
 
-    constructor(private fb: FormBuilder, private router: Router) {
+    constructor(private fb: FormBuilder, private router: Router, private api: ApiService) {
         this.form = this.fb.group({
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(6)]]
@@ -21,11 +23,22 @@ export class LoginComponent {
     }
 
     onSubmit() {
+        this.errorMessage = null;
         if (this.form.valid) {
-            // Traitement de la connexion ou affichage des valeurs
-            console.log(this.form.value);
-            // Redirection vers la page d'accueil
-            this.router.navigate(['/']);
+            const { email, password } = this.form.value;
+            this.api.login(email, password).subscribe({
+                next: (response) => {
+                    // TODO: handle token/session if needed
+                    this.router.navigate(['/']);
+                },
+                error: (error) => {
+                    let msg = "Erreur lors de la connexion. Veuillez vérifier vos identifiants.";
+                    if (error?.error?.detail) {
+                        msg = error.error.detail;
+                    }
+                    this.errorMessage = msg;
+                }
+            });
         }
     }
 }
