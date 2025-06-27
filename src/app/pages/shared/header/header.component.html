@@ -12,7 +12,8 @@
             <a *ngIf="!isLoggedIn && !router.url.includes('login')" routerLink="/register"
                 routerLinkActive="active">Inscription</a>
             <div *ngIf="isLoggedIn" class="user-profile">
-                <img [src]="user.avatar || '/assets/images/avatar1.png'" alt="Avatar" class="avatar" />
+                <img [src]="user.avatar || '/assets/images/avatar1.png'" alt="Avatar" class="avatar"
+                    (error)="avatarError($event)" />
                 <span class="username">{{ user.name }}</span>
                 <button class="logout-btn" (click)="logout()">Déconnexion</button>
             </div>

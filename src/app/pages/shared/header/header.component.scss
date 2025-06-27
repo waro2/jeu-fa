@@ -59,6 +59,51 @@
   color: #185a9d;
 }
 
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.2rem 0.8rem 0.2rem 0.4rem;
+  border-radius: 2rem;
+  box-shadow: 0 1px 4px 0 rgba(24, 90, 157, 0.10);
+}
+
+.user-profile .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px 0 rgba(24, 90, 157, 0.10);
+}
+
+.user-profile .username {
+  font-weight: 600;
+  color: #185a9d;
+  margin-right: 0.7rem;
+  font-size: 1.08rem;
+}
+
+.user-profile .logout-btn {
+  background: linear-gradient(90deg, #185a9d 0%, #b2f0ff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 1.2rem;
+  padding: 0.3rem 1.1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px 0 rgba(24, 90, 157, 0.10);
+}
+
+.user-profile .logout-btn:hover {
+  background: #fff;
+  color: #185a9d;
+  box-shadow: 0 2px 8px 0 rgba(24, 90, 157, 0.15);
+}
+
 @media (max-width: 700px) {
   .header-content {
     flex-direction: column;

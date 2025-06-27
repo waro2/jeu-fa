@@ -27,8 +27,13 @@ export class LoginComponent {
         if (this.form.valid) {
             const { email, password } = this.form.value;
             this.api.login(email, password).subscribe({
-                next: (response) => {
-                    // TODO: handle token/session if needed
+                next: (response: any) => {
+                    // Save token and user info in localStorage
+                    localStorage.setItem('auth_token', response.access_token);
+                    localStorage.setItem('user', JSON.stringify({
+                        name: response.username,
+                        id: response.user_id
+                    }));
                     this.router.navigate(['/']);
                 },
                 error: (error) => {
