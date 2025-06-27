@@ -1,0 +1,41 @@
+.players-section {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px 0 rgba(24, 90, 157, 0.08);
+  padding: 1.2rem 2rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.players-section h3 {
+  color: #185a9d;
+  margin-bottom: 0.7rem;
+}
+
+.players-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.players-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #eaf6fb;
+  border-radius: 0.7rem;
+  padding: 0.4rem 1rem;
+  font-weight: 500;
+  color: #185a9d;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #b2f0ff;
+}

@@ -1,0 +1,59 @@
+<div class="matchmaking-container">
+  <div class="status-section">
+    <div class="search-status">
+      <span class="loader"></span>
+      <span>En attente d'un adversaire...</span>
+    </div>
+    <div class="timer">Recherche depuis 0:45</div>
+  </div>
+
+  <div class="players-section">
+    <h3>Joueurs connectés</h3>
+    <ul class="players-list">
+      <li *ngFor="let player of players">
+        <img [src]="player.avatar" alt="Avatar" class="avatar" />
+        <span>{{ player.pseudo }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="params-section">
+    <h3>Paramètres</h3>
+    <div class="param"><span>PFH initiaux :</span> <strong>100</strong></div>
+    <div class="param"><span>Nombre de tours max :</span> <strong>10</strong></div>
+  </div>
+
+  <div class="mode-section">
+    <h3>Mode de Jeu</h3>
+    <div class="mode-buttons">
+      <button class="mode-btn">1vs1 Rapide</button>
+      <button class="mode-btn">Tournoi</button>
+      <button class="mode-btn">Amis</button>
+    </div>
+  </div>
+
+  <div class="actions-section">
+    <button class="search-btn" (click)="startGame()">Recherche Rapide</button>
+    <button class="invite-btn">Inviter un Ami</button>
+    <button class="cancel-btn">Annuler</button>
+  </div>
+
+  <!-- Modal Invitation -->
+  <div class="modal" style="display: none;">
+    <div class="modal-content">
+      <h4>Inviter un ami</h4>
+      <p>Partagez ce code :</p>
+      <div class="invite-code">ABC123</div>
+      <button class="close-modal">Fermer</button>
+    </div>
+  </div>
+
+  <!-- Popup Match trouvé -->
+  <div class="popup" style="display: none;">
+    <div class="popup-content">
+      <h4>Match trouvé !</h4>
+      <p>Adversaire : <strong>FaviMaster</strong></p>
+      <button class="start-match" (click)="startGame()">Commencer</button>
+    </div>
+  </div>
+</div>

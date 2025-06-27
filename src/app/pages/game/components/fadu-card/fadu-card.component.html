@@ -1,0 +1,40 @@
+<div class="fadu-card" [class.active]="isActive" [class.processing]="isProcessing"
+    [class.player1]="currentPlayer === 'player1'" [class.player2]="currentPlayer === 'player2'" [@cardFlip]="cardState"
+    [@cardDraw]>
+
+    <div class="card-inner">
+        <!-- Face avant -->
+        <div class="card-front" *ngIf="cardState === 'front' && card">
+            <div class="card-header">
+                <h3 class="card-name">{{card.name}}</h3>
+                <span class="card-pfh" *ngIf="card.pfh">{{card.pfh}} PFH</span>
+            </div>
+            <div class="card-image">
+                <img [src]="cardImage || card.image || 'assets/images/boconon-okpele.png'"
+                    [alt]="card.name || 'Carte Fadu'" (error)="onImgError($event)">
+            </div>
+            <div class="card-actions" *ngIf="isActive && !isProcessing">
+                <button *ngIf="gamePhase === 'draw'" (click)="onSelectCard()" class="select-button">
+                    Sélectionner
+                </button>
+                <div *ngIf="gamePhase === 'sacrifice'" class="sacrifice-options">
+                    <h4>Sacrifier cette carte?</h4>
+                    <div class="sacrifice-buttons">
+                        <button (click)="onSacrificeDecision(true)" class="sacrifice-yes">Oui (-14 PFH)</button>
+                        <button (click)="onSacrificeDecision(false)">Non</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Face arrière -->
+        <div class="card-back" *ngIf="cardState === 'back'">
+            <div class="card-back-design">
+                <img src="assets/images/back_card.jpg" alt="Dos de carte">
+            </div>
+        </div>
+    </div>
+    <!-- Overlay de traitement -->
+    <div *ngIf="isProcessing" class="processing-overlay">
+        <div class="spinner"></div>
+    </div>
+</div>

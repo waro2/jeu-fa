@@ -1,0 +1,153 @@
+<div class="game-container">
+    <!-- En-tête & Informations Joueurs -->
+    <header class="game-header">
+        <div class="player-dashboard square left">
+            <div class="player-header">
+                <span class="player-name">Joueur 1</span>
+                <button *ngIf="currentPlayer === 'player1' && phase === 'draw'" class="play-btn"
+                    (click)="onPlayClick()">À vous de jouer</button>
+                <button *ngIf="currentPlayer !== 'player1' || phase !== 'draw'" class="wait-btn" disabled>En
+                    attente</button>
+            </div>
+            <div class="player-pfh">PFH : {{ playerStates.player1.pfh }}</div>
+            <div class="player-turn">Tour : {{ turn }}</div>
+            <div class="player-phase">Phase : {{ phase }}</div>
+        </div>
+        <div class="game-quote">
+            <span>Parfois, il faut tout perdre pour tout gagner.<br>La vie est un étrange mélange de grâce et de
+                chaos.</span>
+        </div>
+        <div class="player-dashboard square right">
+            <div class="player-header">
+                <span class="player-name">Joueur 2</span>
+                <button *ngIf="currentPlayer === 'player2' && phase === 'draw'" class="play-btn"
+                    (click)="onPlayClick()">À vous de jouer</button>
+                <button *ngIf="currentPlayer !== 'player2' || phase !== 'draw'" class="wait-btn" disabled>En
+                    attente</button>
+            </div>
+            <div class="player-pfh">PFH : {{ playerStates.player2.pfh }}</div>
+            <div class="player-turn">Tour : {{ turn }}</div>
+            <div class="player-phase">Phase : {{ phase }}</div>
+        </div>
+    </header>
+
+    <!-- Zone Centrale - Actions de Jeu -->
+    <main class="game-main">
+        <div class="main-row">
+            <div class="main-col left">
+                <div class="drawn-card" *ngIf="playerStates.player1.card">
+                    <app-fadu-card
+                        [card]="playerStates.player1.sacrifice && playerStates.player1.sacrificeCard ? playerStates.player1.sacrificeCard : playerStates.player1.card"
+                        [isActive]="currentPlayer === 'player1' && (phase === 'strategy' || phase === 'sacrifice')"
+                        [isProcessing]="isProcessing" [currentPlayer]="currentPlayer" [gamePhase]="phase"
+                        [selectedStrategy]="playerStates.player1.strategy || undefined" [strategies]="strategies"
+                        [cardState]="'front'" (selectStrategy)="showStrateggySelector()"
+                        (sacrificeDecision)="onSacrificeDecision($event)"></app-fadu-card>
+                </div>
+            </div>
+            <div class="main-col center">
+                <div class="deck-area">
+                    <div class="deck" *ngIf="phase === 'draw' && canDraw">
+                        <img src="assets/cards/deck.png" alt="Deck de cartes Fadu" class="deck-img" />
+                        <button class="draw-btn" (click)="drawCard()">Tirer une carte</button>
+                    </div>
+                </div>
+                <!-- Bloc stratégie centralisé -->
+                <div *ngIf="phase === 'strategy' && strateggySelectorVisible[currentPlayer] && !playerStates[currentPlayer].strategy"
+                    class="strategy-selector-central">
+                    <app-strateggy-selector [strategies]="strategies"
+                        [selectedStrategy]="playerStates[currentPlayer].strategy || undefined"
+                        [playerPFH]="playerStates[currentPlayer].pfh" [sacrificeCost]="14"
+                        (selectStrategy)="onStrategySelected($event)"></app-strateggy-selector>
+                </div>
+                <button class="choose-strategy-btn"
+                    *ngIf="phase === 'strategy' && !strateggySelectorVisible[currentPlayer] && !playerStates[currentPlayer].strategy"
+                    (click)="showStrateggySelector()">Choisir une stratégie</button>
+                <div class="strategy-area" *ngIf="phase === 'reveal'">
+                    <div class="reveal-info">
+                        <h3>Résultats du tour {{ turn }}</h3>
+                        <div>
+                            <strong>Joueur 1</strong> : {{ playerStates.player1.strategy }}
+                            <span *ngIf="playerStates.player1.sacrifice">(Sacrifice)</span>
+                            | Gain : {{ gameHistory[turn-1]?.player1.gain || 0 }} PFH
+                        </div>
+                        <div>
+                            <strong>Joueur 2</strong> : {{ playerStates.player2.strategy }}
+                            <span *ngIf="playerStates.player2.sacrifice">(Sacrifice)</span>
+                            | Gain : {{ gameHistory[turn-1]?.player2.gain || 0 }} PFH
+                        </div>
+                    </div>
+                </div>
+                <div class="strategy-area" *ngIf="phase === 'results'">
+                    <div class="endgame-info">
+                        <h2>Fin de partie</h2>
+                        <div *ngIf="winner === 'player1'">Victoire de Joueur 1 !</div>
+                        <div *ngIf="winner === 'player2'">Victoire de Joueur 2 !</div>
+                        <div *ngIf="winner === null">Match nul !</div>
+                        <button (click)="nextTurn()">Rejouer</button>
+                    </div>
+                </div>
+            </div>
+            <div class="main-col right">
+                <div class="drawn-card" *ngIf="playerStates.player2.card && phase !== 'draw'">
+                    <app-fadu-card
+                        [card]="playerStates.player2.sacrifice && playerStates.player2.sacrificeCard ? playerStates.player2.sacrificeCard : playerStates.player2.card"
+                        [isActive]="currentPlayer === 'player2' && (phase === 'strategy' || phase === 'sacrifice')"
+                        [isProcessing]="isProcessing" [currentPlayer]="currentPlayer" [gamePhase]="phase"
+                        [selectedStrategy]="playerStates.player2.strategy || undefined" [strategies]="strategies"
+                        [cardState]="'front'" (selectStrategy)="showStrateggySelector()"
+                        (sacrificeDecision)="onSacrificeDecision($event)"></app-fadu-card>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Popup Sacrifice -->
+    <div class="modal" style="display: none;">
+        <div class="modal-content">
+            <p>Dépenser 14 PFH pour tirer une carte supplémentaire ?</p>
+            <button class="confirm">Confirmer</button>
+            <button class="cancel">Annuler</button>
+            <div class="warning">PFH insuffisants !</div>
+        </div>
+    </div>
+
+    <!-- Tableau Récapitulatif -->
+    <footer class="game-footer">
+        <table class="recap-table">
+            <thead>
+                <tr>
+                    <th>Tour</th>
+                    <th>Favi 1 (Carte/Stratégie)</th>
+                    <th>Favi 2 (Carte/Stratégie)</th>
+                    <th>Gains PFH</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Fadu A / C</td>
+                    <td>Fadu B / V</td>
+                    <td>+20 / -5</td>
+                </tr>
+                <!-- Autres tours dynamiques -->
+            </tbody>
+        </table>
+    </footer>
+
+    <!-- Fin de Partie -->
+    <div class="endgame-modal" style="display: none;">
+        <div class="endgame-content">
+            <h2>Victoire de Favi 1 !</h2>
+            <div class="recap-key-turns">
+                <p>Tour 3 : Fadu X / G - Décisif</p>
+                <!-- Autres tours clés -->
+            </div>
+            <button class="replay">Rejouer</button>
+            <button class="quit">Quiter</button>
+        </div>
+    </div>
+
+    <!-- Panneau de Debug -->
+    <!-- Debug désactivé -->
+</div>

@@ -1,0 +1,112 @@
+.strategy-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f9f9f9;
+  border-radius: 0.7rem;
+  box-shadow: 0 2px 8px 0 rgba(31, 38, 135, 0.08);
+  padding: 1.2rem 1.5rem;
+  margin-top: 1rem;
+  min-width: 220px;
+  max-width: 320px;
+  border: 2px solid #43cea2;
+}
+
+.strategy-selector h3 {
+  color: #185a9d;
+  margin-bottom: 0.7rem;
+  font-size: 1.2rem;
+}
+
+.strategies {
+  display: flex;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.strategies button {
+  background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+  color: #fff;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.strategies button.selected,
+.strategies button:hover {
+  background: linear-gradient(90deg, #185a9d 0%, #43cea2 100%);
+  transform: scale(1.07);
+}
+
+.strategies .tooltip {
+  visibility: hidden;
+  opacity: 0;
+  background: #185a9d;
+  color: #fff;
+  text-align: center;
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  position: absolute;
+  z-index: 2;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.95rem;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  min-width: 120px;
+}
+
+.strategies button:hover .tooltip,
+.strategies button.selected .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.sacrifice-option {
+  margin-top: 1.2rem;
+  background: #fffbe6;
+  border-radius: 0.5rem;
+  padding: 0.7rem 1rem;
+  width: 100%;
+  box-shadow: 0 1px 4px #ffd20022;
+  border: 1.5px solid #ffd200;
+}
+
+.sacrifice-option h4 {
+  color: #f7971e;
+  margin-bottom: 0.3rem;
+}
+
+.sacrifice-option p {
+  color: #444;
+  font-size: 0.98rem;
+  margin-bottom: 0.7rem;
+}
+
+.sacrifice-buttons {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: center;
+}
+
+.sacrifice-buttons button {
+  background: linear-gradient(90deg, #ffd200 0%, #f7971e 100%);
+  color: #fff;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.4rem 1.1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.sacrifice-buttons button:disabled {
+  background: #ccc;
+  color: #888;
+  cursor: not-allowed;
+}

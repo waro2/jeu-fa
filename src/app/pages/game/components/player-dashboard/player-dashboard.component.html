@@ -1,0 +1,10 @@
+<div class="player-dashboard square" [class.active]="player.isActive">
+  <div class="player-header">
+    <span class="player-name">{{ player.name }}</span>
+    <button *ngIf="player.isActive" class="play-btn">À vous de jouer</button>
+    <button *ngIf="!player.isActive" class="wait-btn">En attente</button>
+  </div>
+  <div class="player-pfh">PFH : {{ player.pfh }}</div>
+  <div class="player-turn">Tour : {{ turn }}</div>
+  <div class="player-phase">Phase : {{ phase }}</div>
+</div>

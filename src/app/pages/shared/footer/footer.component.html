@@ -1,0 +1,47 @@
+<footer class="game-footer">
+    <div class="footer-container">
+        <div class="footer-section">
+            <h3>Jeu Fà</h3>
+            <p>« Parfois, il faut tout perdre pour tout gagner. »</p>
+            <div class="game-info">
+                <span>Version {{ gameVersion }}</span>
+                <span>© {{ currentYear }} Tous droits réservés</span>
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <h3>Navigation</h3>
+            <ul>
+                <li *ngFor="let link of usefulLinks">
+                    <a [routerLink]="link.path">{{ link.label }}</a>
+                </li>
+                <li><a routerLink="/privacy">Politique de confidentialité</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3>Ressources</h3>
+            <ul>
+                <li><a href="#" target="_blank">Documentation</a></li>
+                <li><a href="#" target="_blank">Guide stratégique</a></li>
+                <li><a href="#" target="_blank">FAQ</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section social-section">
+            <h3>Communauté</h3>
+            <div class="social-icons">
+                <a *ngFor="let social of socialLinks" [href]="social.url" target="_blank" rel="noopener noreferrer">
+                    <i [class]="social.icon"></i>
+                </a>
+            </div>
+            <div class="newsletter">
+                <p>Abonnez-vous aux nouveautés</p>
+                <div class="newsletter-input">
+                    <input type="email" placeholder="Votre email">
+                    <button>OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

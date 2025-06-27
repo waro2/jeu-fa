@@ -1,0 +1,9 @@
+<div class="players-section">
+  <h3>Joueurs connectés</h3>
+  <ul class="players-list">
+    <li *ngFor="let player of players">
+      <img [src]="player.avatar" alt="Avatar" class="avatar" />
+      <span>{{ player.pseudo }}</span>
+    </li>
+  </ul>
+</div>

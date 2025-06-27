@@ -1,0 +1,125 @@
+.game-footer {
+    background: linear-gradient(90deg, #f7b42c 0%, #ffd452 100%);
+    color: #232946;
+    padding: 2.5rem 0 1.2rem 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 2rem;
+}
+
+.footer-section {
+    flex: 1 1 220px;
+    min-width: 220px;
+    margin-bottom: 1.5rem;
+}
+
+.footer-section h3 {
+    color: #185a9d;
+    margin-bottom: 0.7rem;
+    font-size: 1.2rem;
+}
+
+.footer-section p {
+    margin: 0.3rem 0 0.7rem 0;
+    font-style: italic;
+    color: #185a9d;
+}
+
+.game-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: 0.98rem;
+    color: #185a9d;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-section ul li a {
+    color: #232946;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-section ul li a:hover {
+    color: #185a9d;
+}
+
+.social-section .social-icons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.7rem;
+}
+
+.social-section .social-icons a {
+    color: #232946;
+    font-size: 1.3rem;
+    transition: color 0.2s;
+}
+
+.social-section .social-icons a:hover {
+    color: #185a9d;
+}
+
+.newsletter {
+    margin-top: 0.7rem;
+}
+
+.newsletter-input {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+}
+
+.newsletter-input input[type="email"] {
+    padding: 0.5rem 0.8rem;
+    border-radius: 0.4rem;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+}
+
+.newsletter-input button {
+    background: #185a9d;
+    color: #fff;
+    border: none;
+    border-radius: 0.4rem;
+    padding: 0.5rem 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.newsletter-input button:hover {
+    background: #ffd452;
+    color: #232946;
+}
+
+@media (max-width: 900px) {
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .footer-section {
+        min-width: 0;
+        width: 100%;
+        text-align: center;
+    }
+}

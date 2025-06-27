@@ -1,0 +1,22 @@
+<div class="strategy-selector">
+  <h3>Sélection de stratégie</h3>
+  <div class="strategies">
+    <button *ngFor="let strat of strategies" [class.selected]="selectedStrategy === strat.value"
+      (click)="onSelect(strat.value)">
+      {{ strat.label }}
+      <span class="tooltip">{{ strat.description }}</span>
+    </button>
+  </div>
+  <div class="sacrifice-option" *ngIf="selectedStrategy">
+    <h4>Sacrifice optionnel</h4>
+    <p>Coût: {{ sacrificeCost }} PFH (Solde actuel: {{ playerPFH }} PFH)</p>
+    <div class="sacrifice-buttons">
+      <button (click)="requestSacrifice(true)" [disabled]="!canSacrifice()">
+        Faire un sacrifice
+      </button>
+      <button (click)="requestSacrifice(false)">
+        Ne pas sacrifier
+      </button>
+    </div>
+  </div>
+</div>

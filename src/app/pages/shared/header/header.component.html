@@ -1,0 +1,21 @@
+<header class="main-header">
+    <div class="header-content">
+        <div class="logo">
+            <img src="/assets/images/boconon-okpele.png" alt="Logo Jeu Fa" />
+            <span class="brand">Jeu Fà</span>
+        </div>
+        <nav class="nav-menu">
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
+            <a routerLink="/matchmaking" routerLinkActive="active">Matchmaking</a>
+            <a routerLink="/game-board" routerLinkActive="active">Jeu</a>
+            <a *ngIf="!isLoggedIn" routerLink="/login" routerLinkActive="active">Connexion</a>
+            <a *ngIf="!isLoggedIn && !router.url.includes('login')" routerLink="/register"
+                routerLinkActive="active">Inscription</a>
+            <div *ngIf="isLoggedIn" class="user-profile">
+                <img [src]="user.avatar || '/assets/images/avatar1.png'" alt="Avatar" class="avatar" />
+                <span class="username">{{ user.name }}</span>
+                <button class="logout-btn" (click)="logout()">Déconnexion</button>
+            </div>
+        </nav>
+    </div>
+</header>
