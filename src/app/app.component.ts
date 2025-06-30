@@ -14,19 +14,39 @@ import { JsonPipe } from '@angular/common';
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'jeu-fa';
-  status = '';
+  status: string = '';
   messages: any[] = [];
+  private wsStatus: string = '';
 
   constructor(private ws: WebsocketService) { }
 
   ngOnInit() {
-    this.ws.connect();
-    this.ws.status$.subscribe(s => this.status = s);
-    this.ws.messages$.subscribe(msg => this.messages.push(msg));
+    console.log('AppComponent: Initializing WebSocket connection...');
+    // Connect to player WebSocket (replace '1' with actual playerId as needed)
+    this.ws.connectPlayer('1');
+
+    this.ws.status$.subscribe(status => {
+      console.log('WebSocket status:', status);
+      this.status = status;
+      this.wsStatus = status;
+      // Send test message only when connection is open
+      if (status === 'OPEN') {
+        this.ws.sendMessage('ping', { content: 'Hello server!' });
+      }
+    });
+    
+    this.ws.messages$.subscribe(msg => {
+      console.log('AppComponent: Received WebSocket message:', msg);
+      this.messages.push(msg);
+    });
   }
 
   sendTest() {
-    this.ws.send({ type: 'ping', content: 'Hello server!' });
+    if (this.wsStatus === 'OPEN') {
+      this.ws.sendMessage('ping', { content: 'Hello server!' });
+    } else {
+      console.warn('WebSocket not open, cannot send message');
+    }
   }
 
   ngOnDestroy() {
