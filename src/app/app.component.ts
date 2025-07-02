@@ -1,55 +1,67 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { FooterComponent } from './pages/shared/footer/footer.component';
-import { HeaderComponent } from './pages/shared/header/header.component';
-import { WebsocketService } from './services/websocket.service';
+import { Component, OnDestroy } from '@angular/core';
+import { WebsocketService, WebSocketStatus } from './services/websocket.service';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { JsonPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { FooterComponent } from './pages/shared/footer/footer.component';
+import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from './pages/shared/header/header.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FooterComponent, HeaderComponent, CommonModule, JsonPipe],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss'],
+  imports: [CommonModule, FormsModule, FooterComponent, RouterOutlet, HeaderComponent],
+  providers: [WebsocketService],
+  standalone: true
 })
-export class AppComponent implements OnInit, OnDestroy {
-  title = 'jeu-fa';
-  status: string = '';
-  messages: any[] = [];
-  private wsStatus: string = '';
+export class AppComponent implements OnDestroy {
+  wsType: 'player' | 'game' | 'matchmaking' | 'test' = 'test';
+  playerId: number = 1;
+  gameId: number = 1;
+  testMsg: string = '';
+  status: WebSocketStatus = 'CLOSED';
+  messages: string[] = [];
 
-  constructor(private ws: WebsocketService) { }
+  private statusSub?: Subscription;
+  private msgSub?: Subscription;
 
-  ngOnInit() {
-    console.log('AppComponent: Initializing WebSocket connection...');
-    // Connect to player WebSocket (replace '1' with actual playerId as needed)
-    this.ws.connectPlayer('1');
-
-    this.ws.status$.subscribe(status => {
-      console.log('WebSocket status:', status);
-      this.status = status;
-      this.wsStatus = status;
-      // Send test message only when connection is open
-      if (status === 'OPEN') {
-        this.ws.sendMessage('ping', { content: 'Hello server!' });
-      }
-    });
-    
-    this.ws.messages$.subscribe(msg => {
-      console.log('AppComponent: Received WebSocket message:', msg);
-      this.messages.push(msg);
-    });
+  constructor(private ws: WebsocketService) {
+    this.statusSub = this.ws.status$.subscribe(status => this.status = status);
+    this.msgSub = this.ws.messages$.subscribe(msg => this.messages.push(typeof msg === 'string' ? msg : JSON.stringify(msg)));
   }
 
-  sendTest() {
-    if (this.wsStatus === 'OPEN') {
-      this.ws.sendMessage('ping', { content: 'Hello server!' });
+  connect() {
+    this.messages = [];
+    console.log('connect', this.wsType);
+    if (this.wsType === 'player') {
+      this.ws.connectPlayer(this.playerId.toString());
+    } else if (this.wsType === 'game') {
+      this.ws.connectGame(this.gameId.toString(), this.playerId.toString());
+    } else if (this.wsType === 'matchmaking') {
+      this.ws.connectMatchmaking();
     } else {
-      console.warn('WebSocket not open, cannot send message');
+      this.ws.connectTest();
+    }
+  }
+
+  disconnect() {
+    this.ws.close();
+  }
+
+  sendTestMsg() {
+    if (this.status === 'OPEN') {
+      if (this.wsType === 'test') {
+        this.ws.send(this.testMsg || 'Hello from Angular!');
+      } else {
+        this.ws.sendMessage('test', this.testMsg || 'Hello from Angular!');
+      }
     }
   }
 
   ngOnDestroy() {
+    this.statusSub?.unsubscribe();
+    this.msgSub?.unsubscribe();
     this.ws.close();
   }
 }

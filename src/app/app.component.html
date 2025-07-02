@@ -1,8 +1,33 @@
 <app-header />
-<div style="padding: 1em; text-align: center;">
-    <button (click)="sendTest()" style="margin-bottom: 1em;">Envoyer message WebSocket</button>
-    <div>Status WebSocket: {{ status }}</div>
-    <div *ngFor="let msg of messages">Message reçu: {{ msg | json }}</div>
+<div style="padding:2rem;">
+    <h2>Angular WebSocket Tester</h2>
+    <div>
+      <label>
+        Type:
+        <select [(ngModel)]="wsType">
+          <option value="player">Player</option>
+          <option value="game">Game</option>
+          <option value="matchmaking">Matchmaking</option>
+          <option value="test">Test</option>
+        </select>
+      </label>
+      <label>
+        Player ID: <input [(ngModel)]="playerId" type="number" style="width:60px;">
+      </label>
+      <label *ngIf="wsType === 'game'">
+        Game ID: <input [(ngModel)]="gameId" type="number" style="width:60px;">
+      </label>
+      <button (click)="connect()">Connect</button>
+      <button (click)="disconnect()">Disconnect</button>
+    </div>
+    <div>
+      <input [(ngModel)]="testMsg" placeholder="Message to send" style="width:200px;">
+      <button (click)="sendTestMsg()">Send Test Message</button>
+    </div>
+    <div>Status: {{ status }}</div>
+    <pre style="background:#f4f4f4; padding:10px; height:200px; overflow:auto;">
+      <div *ngFor="let msg of messages">{{ msg }}</div>
+    </pre>
 </div>
 <router-outlet />
 <app-footer />

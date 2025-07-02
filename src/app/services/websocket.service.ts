@@ -10,18 +10,19 @@ export class WebsocketService implements OnDestroy {
     private statusSubject = new Subject<WebSocketStatus>();
     private currentUrl: string = '';
 
+
     connectPlayer(playerId: string, baseUrl: string = 'ws://localhost:8000') {
-        const url = `${baseUrl}/websocket/ws/player/${playerId}`;
+        const url = `${baseUrl}/api/v1/websocket/websocket/ws/player/${playerId}`;
         this.connect(url);
     }
 
     connectGame(gameId: string, playerId: string, baseUrl: string = 'ws://localhost:8000') {
-        const url = `${baseUrl}/websocket/ws/game/${gameId}?player_id=${playerId}`;
+        const url = `${baseUrl}/api/v1/websocket/websocket/ws/game/${gameId}?player_id=${playerId}`;
         this.connect(url);
     }
 
     connectMatchmaking(baseUrl: string = 'ws://localhost:8000') {
-        const url = `${baseUrl}/websocket/ws/matchmaking`;
+        const url = `${baseUrl}/api/v1/websocket/websocket/ws/matchmaking`;
         this.connect(url);
     }
 
@@ -35,6 +36,7 @@ export class WebsocketService implements OnDestroy {
 
         try {
             this.ws = new WebSocket(url);
+            console.log('ws', this.ws);
             this.ws.onopen = () => {
                 this.statusSubject.next('OPEN');
             };
@@ -58,6 +60,11 @@ export class WebsocketService implements OnDestroy {
         } catch (error) {
             this.statusSubject.next('ERROR');
         }
+    }
+
+    connectTest(baseUrl: string = 'ws://localhost:8000') {
+        const url = `${baseUrl}/api/v1/websocket/websocket/ws/test`;
+        this.connect(url);
     }
 
     sendMessage(type: string, data: any = {}) {
