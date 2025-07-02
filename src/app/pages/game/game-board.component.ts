@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FaduCardComponent, FaduCard } from './components/fadu-card/fadu-card.component';
 import { StrateggySelectorComponent } from './components/strateggy-selector/strateggy-selector.component';
+import { WebsocketService, WebSocketStatus } from '../../services/websocket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-game-board',
@@ -10,7 +12,7 @@ import { StrateggySelectorComponent } from './components/strateggy-selector/stra
     templateUrl: './game-board.component.html',
     styleUrls: ['./game-board.component.scss']
 })
-export class GameBoardComponent {
+export class GameBoardComponent implements OnInit, OnDestroy {
     isProcessing: boolean = false;
     deck: FaduCard[] = [
         { name: 'di_gbe', image: '/assets/cards/di_gbe.jpg' },
@@ -100,6 +102,57 @@ export class GameBoardComponent {
 
     // Ajout d'un état pour savoir si le joueur courant peut tirer une carte
     canDraw: boolean = false;
+
+    wsStatus: WebSocketStatus = 'CLOSED';
+    wsMessages: any[] = [];
+    private wsStatusSub?: Subscription;
+    private wsMsgSub?: Subscription;
+    gameId: number = 1; // Replace with actual gameId logic
+    playerId: number = 1; // Replace with actual playerId logic
+
+    constructor(private ws: WebsocketService) {}
+
+    ngOnInit() {
+        // Connect to the game WebSocket endpoint
+        this.ws.connectGame(this.gameId.toString(), this.playerId.toString());
+        this.wsStatusSub = this.ws.status$.subscribe((status: WebSocketStatus) => {
+            this.wsStatus = status;
+            if (status === 'OPEN') {
+                // Optionally, request initial game state or send a ping
+                this.ws.sendMessage('ping', { content: 'Hello from GameBoard!' });
+            }
+        });
+        this.wsMsgSub = this.ws.messages$.subscribe((msg: any) => {
+            this.handleWsMessage(msg);
+        });
+    }
+
+    ngOnDestroy() {
+        this.wsStatusSub?.unsubscribe();
+        this.wsMsgSub?.unsubscribe();
+        this.ws.close();
+    }
+
+    handleWsMessage(msg: any) {
+        this.wsMessages.push(msg);
+        // Handle game state updates, turn events, etc.
+        if (msg.type === 'game_state_update') {
+            // Update local game state
+            // Example: this.updateGameState(msg.data);
+        } else if (msg.type === 'turn_start') {
+            // Handle turn start
+        } else if (msg.type === 'turn_result') {
+            // Handle turn result
+        } else if (msg.type === 'game_end') {
+            // Handle game end
+        }
+    }
+
+    sendTurnAction(strategy: string, sacrifice: boolean = false) {
+        if (this.wsStatus === 'OPEN') {
+            this.ws.sendMessage('turn_action', { strategy, sacrifice });
+        }
+    }
 
     // Méthode appelée quand le joueur clique sur "À vous de jouer"
     onPlayClick() {
