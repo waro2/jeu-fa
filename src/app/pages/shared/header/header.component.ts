@@ -12,6 +12,7 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
     showMobileMenu = false;
+    showUserDropdown = false;
     isScrolled = false;
 
     constructor(public readonly router: Router, private readonly auth: AuthService) { }
@@ -29,6 +30,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.checkScrollPosition();
     }
 
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: Event) {
+        const target = event.target as HTMLElement;
+        if (!target.closest('.user-dropdown-container')) {
+            this.showUserDropdown = false;
+        }
+    }
+
     private checkScrollPosition() {
         this.isScrolled = window.pageYOffset > 20;
     }
@@ -39,20 +48,44 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     get user() {
         const userData = localStorage.getItem('user');
-        return userData ? JSON.parse(userData) : { name: '', avatar: '' };
+        return userData ? JSON.parse(userData) : { 
+            name: 'Utilisateur', 
+            avatar: '', 
+            email: 'utilisateur@example.com',
+            joinDate: new Date().toLocaleDateString('fr-FR'),
+            gamesPlayed: 0,
+            wins: 0
+        };
     }
 
     toggleMobileMenu() {
         this.showMobileMenu = !this.showMobileMenu;
+        // Close user dropdown when mobile menu opens
+        if (this.showMobileMenu) {
+            this.showUserDropdown = false;
+        }
+    }
+
+    toggleUserDropdown() {
+        this.showUserDropdown = !this.showUserDropdown;
+        // Close mobile menu when user dropdown opens
+        if (this.showUserDropdown) {
+            this.showMobileMenu = false;
+        }
     }
 
     closeMobileMenu() {
         this.showMobileMenu = false;
     }
 
+    closeUserDropdown() {
+        this.showUserDropdown = false;
+    }
+
     logout() {
         this.auth.logout();
         this.closeMobileMenu();
+        this.closeUserDropdown();
         window.location.reload();
     }
 
