@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &.auth-page {
+    background: linear-gradient(135deg, #6d4423 0%, #a44200 50%, #5c2018 100%);
+  }
+}
+
+// When auth page, the router outlet should take full height
+:host.auth-page router-outlet {
+  flex: 1;
+  display: flex;
+}

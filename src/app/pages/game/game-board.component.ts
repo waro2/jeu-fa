@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { FaduCardComponent, FaduCard } from './components/fadu-card/fadu-card.component';
 import { StrateggySelectorComponent } from './components/strateggy-selector/strateggy-selector.component';
 import { WebsocketService, WebSocketStatus } from '../../services/websocket.service';
@@ -110,7 +111,7 @@ export class GameBoardComponent implements OnInit, OnDestroy {
     gameId: number = 1; // Replace with actual gameId logic
     playerId: number = 1; // Replace with actual playerId logic
 
-    constructor(private ws: WebsocketService) {}
+    constructor(private readonly ws: WebsocketService, private readonly router: Router) {}
 
     ngOnInit() {
         // Connect to the game WebSocket endpoint
@@ -139,12 +140,9 @@ export class GameBoardComponent implements OnInit, OnDestroy {
         if (msg.type === 'game_state_update') {
             // Update local game state
             // Example: this.updateGameState(msg.data);
-        } else if (msg.type === 'turn_start') {
-            // Handle turn start
-        } else if (msg.type === 'turn_result') {
-            // Handle turn result
-        } else if (msg.type === 'game_end') {
-            // Handle game end
+        } else if (['turn_start', 'turn_result', 'game_end'].includes(msg.type)) {
+            // Handle turn events and game end
+            console.log(`Received ${msg.type} event:`, msg);
         }
     }
 
@@ -259,5 +257,13 @@ export class GameBoardComponent implements OnInit, OnDestroy {
         this.currentPlayer = 'player1';
         this.phase = 'draw';
         this.strateggySelectorVisible = { player1: false, player2: false };
+    }
+
+    quitGame() {
+        // Close WebSocket connection
+        this.ws.close();
+        
+        // Navigate back to home page
+        this.router.navigate(['/']);
     }
 }

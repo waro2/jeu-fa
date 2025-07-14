@@ -1,67 +1,160 @@
-.auth-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+/* Modern African-inspired Login Styles */
+
+/* Enhanced Card Shadow */
+.enhanced-card-shadow {
+  box-shadow: 
+    0 20px 40px -8px rgba(0, 0, 0, 0.4),
+    0 8px 24px -4px rgba(146, 64, 14, 0.6),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 40px rgba(251, 191, 36, 0.1);
 }
 
-.auth-form {
-    background: #fff;
-    padding: 2.5rem 2rem;
-    border-radius: 1.2rem;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-    width: 100%;
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
+/* Enhanced Logo Glow */
+.enhanced-logo-glow {
+  box-shadow: 
+    0 8px 24px rgba(251, 191, 36, 0.6),
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3),
+    0 0 30px rgba(251, 191, 36, 0.3);
+  transition: all 0.3s ease;
 }
 
-.auth-form h2 {
-    text-align: center;
-    color: #2575fc;
-    margin-bottom: 1rem;
+.enhanced-logo-glow:hover {
+  box-shadow: 
+    0 12px 32px rgba(251, 191, 36, 0.8),
+    0 6px 16px rgba(0, 0, 0, 0.5),
+    inset 0 3px 6px rgba(255, 255, 255, 0.4),
+    0 0 40px rgba(251, 191, 36, 0.5);
+  transform: scale(1.05);
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+/* Enhanced Button Shadow */
+.enhanced-button-shadow {
+  box-shadow: 
+    0 8px 20px rgba(245, 158, 11, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(245, 158, 11, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
 }
 
-.form-group input {
-    padding: 0.7rem 1rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    transition: border 0.2s;
+.enhanced-button-shadow:hover {
+  box-shadow: 
+    0 12px 28px rgba(245, 158, 11, 0.6),
+    0 6px 16px rgba(0, 0, 0, 0.4),
+    0 3px 12px rgba(245, 158, 11, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
 }
 
-.form-group input:focus {
-    border: 1.5px solid #2575fc;
-    outline: none;
+/* Custom width for large blur */
+.w-128 {
+  width: 32rem;
 }
 
-button[type="submit"] {
-    margin-top: 1rem;
-    padding: 0.8rem 0;
-    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
-    color: #fff;
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
+.h-128 {
+  height: 32rem;
 }
 
-button[type="submit"]:hover {
-    background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
+/* Form input focus effects */
+input:focus {
+  box-shadow: 
+    0 0 0 3px rgba(251, 191, 36, 0.1),
+    0 4px 12px rgba(251, 191, 36, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
 }
 
-.error {
-    color: #e74c3c;
-    font-size: 0.95rem;
-    margin-top: 0.2rem;
+/* Floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Shimmer effect for button */
+.group:hover .shimmer {
+  animation: shimmer 1s ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(300%) skewX(-12deg);
+  }
+}
+
+/* Enhanced form styling */
+.form-group input:focus + .form-icon {
+  color: rgb(251 191 36);
+  transform: scale(1.1);
+}
+
+/* Error state animations */
+.error-message {
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading spinner enhancement */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .enhanced-card-shadow {
+    margin: 1rem;
+    box-shadow: 
+      0 12px 28px -6px rgba(0, 0, 0, 0.3),
+      0 6px 18px -3px rgba(146, 64, 14, 0.5),
+      0 3px 12px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+a:focus {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+/* Backdrop blur support for older browsers */
+@supports not (backdrop-filter: blur(12px)) {
+  .backdrop-blur-xl {
+    background-color: rgba(120, 53, 15, 0.95);
+  }
+  
+  .backdrop-blur-sm {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
 }
