@@ -1,13 +1,13 @@
-<div class="home-container">
-    <div class="home-content">
-        <h1>Bienvenue sur Jeu Fa !</h1>
-        <p class="subtitle">Un jeu de hasard et de stratégie inspiré de la tradition africaine.</p>
-        <div class="actions">
-            <button class="play-btn" (click)="goToMatchmaking()">Jouer</button>
-            <button class="rules-btn">Règles du jeu</button>
+<div class="home-container min-h-screen bg-gradient-to-br from-blue-900 to-purple-900">
+    <div class="home-content container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-white text-center mb-4">Bienvenue sur Jeu Fa !</h1>
+        <p class="subtitle text-xl text-gray-200 text-center mb-8">Un jeu de hasard et de stratégie inspiré de la tradition africaine.</p>
+        <div class="actions flex gap-4 justify-center mb-8">
+            <button class="play-btn bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors" (click)="goToMatchmaking()">Jouer</button>
+            <button class="rules-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">Règles du jeu</button>
         </div>
-        <div class="illustration">
-            <img src="/assets/images/boconon-okpele.png" alt="Illustration Jeu Fa" />
+        <div class="illustration flex justify-center">
+            <img src="/assets/images/boconon-okpele.png" alt="Illustration Jeu Fa" class="max-w-md rounded-lg shadow-lg" />
         </div>
     </div>
 </div>
