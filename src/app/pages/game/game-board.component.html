@@ -1,153 +1,341 @@
-<div class="game-container">
-    <!-- En-tête & Informations Joueurs -->
-    <header class="game-header">
-        <div class="player-dashboard square left">
-            <div class="player-header">
-                <span class="player-name">Joueur 1</span>
-                <button *ngIf="currentPlayer === 'player1' && phase === 'draw'" class="play-btn"
-                    (click)="onPlayClick()">À vous de jouer</button>
-                <button *ngIf="currentPlayer !== 'player1' || phase !== 'draw'" class="wait-btn" disabled>En
-                    attente</button>
-            </div>
-            <div class="player-pfh">PFH : {{ playerStates.player1.pfh }}</div>
-            <div class="player-turn">Tour : {{ turn }}</div>
-            <div class="player-phase">Phase : {{ phase }}</div>
-        </div>
-        <div class="game-quote">
-            <span>Parfois, il faut tout perdre pour tout gagner.<br>La vie est un étrange mélange de grâce et de
-                chaos.</span>
-        </div>
-        <div class="player-dashboard square right">
-            <div class="player-header">
-                <span class="player-name">Joueur 2</span>
-                <button *ngIf="currentPlayer === 'player2' && phase === 'draw'" class="play-btn"
-                    (click)="onPlayClick()">À vous de jouer</button>
-                <button *ngIf="currentPlayer !== 'player2' || phase !== 'draw'" class="wait-btn" disabled>En
-                    attente</button>
-            </div>
-            <div class="player-pfh">PFH : {{ playerStates.player2.pfh }}</div>
-            <div class="player-turn">Tour : {{ turn }}</div>
-            <div class="player-phase">Phase : {{ phase }}</div>
-        </div>
-    </header>
+<!-- Game Board Container -->
+<div class="min-h-screen bg-gradient-to-br from-amber-900 via-orange-800 to-red-900 relative overflow-hidden">
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 opacity-5">
+    <div class="absolute top-20 left-32 w-32 h-32 border-2 border-amber-300 rotate-45"></div>
+    <div class="absolute top-40 right-48 w-24 h-24 border-2 border-orange-300 rounded-full"></div>
+    <div class="absolute bottom-32 left-56 w-28 h-28 border-2 border-red-300 rotate-12"></div>
+    <div class="absolute bottom-48 right-32 w-20 h-20 border-2 border-amber-300 rounded-full"></div>
+  </div>
 
-    <!-- Zone Centrale - Actions de Jeu -->
-    <main class="game-main">
-        <div class="main-row">
-            <div class="main-col left">
-                <div class="drawn-card" *ngIf="playerStates.player1.card">
-                    <app-fadu-card
-                        [card]="playerStates.player1.sacrifice && playerStates.player1.sacrificeCard ? playerStates.player1.sacrificeCard : playerStates.player1.card"
-                        [isActive]="currentPlayer === 'player1' && (phase === 'strategy' || phase === 'sacrifice')"
-                        [isProcessing]="isProcessing" [currentPlayer]="currentPlayer" [gamePhase]="phase"
-                        [selectedStrategy]="playerStates.player1.strategy || undefined" [strategies]="strategies"
-                        [cardState]="'front'" (selectStrategy)="showStrateggySelector()"
-                        (sacrificeDecision)="onSacrificeDecision($event)"></app-fadu-card>
-                </div>
-            </div>
-            <div class="main-col center">
-                <div class="deck-area">
-                    <div class="deck" *ngIf="phase === 'draw' && canDraw">
-                        <img src="assets/cards/deck.png" alt="Deck de cartes Fadu" class="deck-img" />
-                        <button class="draw-btn" (click)="drawCard()">Tirer une carte</button>
-                    </div>
-                </div>
-                <!-- Bloc stratégie centralisé -->
-                <div *ngIf="phase === 'strategy' && strateggySelectorVisible[currentPlayer] && !playerStates[currentPlayer].strategy"
-                    class="strategy-selector-central">
-                    <app-strateggy-selector [strategies]="strategies"
-                        [selectedStrategy]="playerStates[currentPlayer].strategy || undefined"
-                        [playerPFH]="playerStates[currentPlayer].pfh" [sacrificeCost]="14"
-                        (selectStrategy)="onStrategySelected($event)"></app-strateggy-selector>
-                </div>
-                <button class="choose-strategy-btn"
-                    *ngIf="phase === 'strategy' && !strateggySelectorVisible[currentPlayer] && !playerStates[currentPlayer].strategy"
-                    (click)="showStrateggySelector()">Choisir une stratégie</button>
-                <div class="strategy-area" *ngIf="phase === 'reveal'">
-                    <div class="reveal-info">
-                        <h3>Résultats du tour {{ turn }}</h3>
-                        <div>
-                            <strong>Joueur 1</strong> : {{ playerStates.player1.strategy }}
-                            <span *ngIf="playerStates.player1.sacrifice">(Sacrifice)</span>
-                            | Gain : {{ gameHistory[turn-1]?.player1.gain || 0 }} PFH
-                        </div>
-                        <div>
-                            <strong>Joueur 2</strong> : {{ playerStates.player2.strategy }}
-                            <span *ngIf="playerStates.player2.sacrifice">(Sacrifice)</span>
-                            | Gain : {{ gameHistory[turn-1]?.player2.gain || 0 }} PFH
-                        </div>
-                    </div>
-                </div>
-                <div class="strategy-area" *ngIf="phase === 'results'">
-                    <div class="endgame-info">
-                        <h2>Fin de partie</h2>
-                        <div *ngIf="winner === 'player1'">Victoire de Joueur 1 !</div>
-                        <div *ngIf="winner === 'player2'">Victoire de Joueur 2 !</div>
-                        <div *ngIf="winner === null">Match nul !</div>
-                        <button (click)="nextTurn()">Rejouer</button>
-                    </div>
-                </div>
-            </div>
-            <div class="main-col right">
-                <div class="drawn-card" *ngIf="playerStates.player2.card && phase !== 'draw'">
-                    <app-fadu-card
-                        [card]="playerStates.player2.sacrifice && playerStates.player2.sacrificeCard ? playerStates.player2.sacrificeCard : playerStates.player2.card"
-                        [isActive]="currentPlayer === 'player2' && (phase === 'strategy' || phase === 'sacrifice')"
-                        [isProcessing]="isProcessing" [currentPlayer]="currentPlayer" [gamePhase]="phase"
-                        [selectedStrategy]="playerStates.player2.strategy || undefined" [strategies]="strategies"
-                        [cardState]="'front'" (selectStrategy)="showStrateggySelector()"
-                        (sacrificeDecision)="onSacrificeDecision($event)"></app-fadu-card>
-                </div>
-            </div>
+  <!-- Header Section -->
+  <header class="relative z-10 bg-black/20 backdrop-blur-md border-b border-amber-500/30">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex justify-between items-center">
+        <!-- Game Title -->
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-orange-100">
+              Jeu Fà - Partie en cours
+            </h1>
+            <p class="text-amber-200/80 text-sm">Tour {{ turn }} • Phase: {{ phase }}</p>
+          </div>
         </div>
-    </main>
 
-    <!-- Popup Sacrifice -->
-    <div class="modal" style="display: none;">
-        <div class="modal-content">
-            <p>Dépenser 14 PFH pour tirer une carte supplémentaire ?</p>
-            <button class="confirm">Confirmer</button>
-            <button class="cancel">Annuler</button>
-            <div class="warning">PFH insuffisants !</div>
+        <!-- Game Quote -->
+        <div class="hidden lg:block text-center max-w-md">
+          <p class="text-amber-100 italic text-sm leading-relaxed">
+            « Parfois, il faut tout perdre pour tout gagner.<br>
+            La vie est un étrange mélange de grâce et de chaos. »
+          </p>
         </div>
+
+        <!-- Exit Game Button -->
+        <button class="bg-red-600/80 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+          Quitter
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Game Area -->
+  <main class="relative z-10 container mx-auto px-6 py-8">
+    
+    <!-- Players Dashboard -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <!-- Player 1 Dashboard -->
+      <div class="bg-gradient-to-br from-amber-800/40 to-orange-900/40 backdrop-blur-sm rounded-2xl border border-amber-400/30 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+              1
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-amber-100">Joueur 1</h3>
+              <p class="text-amber-200/80 text-sm">PFH: {{ playerStates.player1.pfh }}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="px-3 py-1 rounded-full text-xs font-medium"
+                 [ngClass]="{
+                   'bg-green-500/20 text-green-300 border border-green-500/50': currentPlayer === 'player1' && phase === 'draw',
+                   'bg-yellow-500/20 text-yellow-300 border border-yellow-500/50': currentPlayer === 'player1' && phase !== 'draw',
+                   'bg-gray-500/20 text-gray-300 border border-gray-500/50': currentPlayer !== 'player1'
+                 }">
+              {{ currentPlayer === 'player1' ? (phase === 'draw' ? 'À votre tour' : 'En action') : 'En attente' }}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Player 1 Action Button -->
+        <div class="mb-4">
+          <button *ngIf="currentPlayer === 'player1' && phase === 'draw'" 
+                  (click)="onPlayClick()"
+                  class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+            <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+            </svg>
+            À vous de jouer
+          </button>
+          <button *ngIf="currentPlayer !== 'player1' || phase !== 'draw'" 
+                  disabled
+                  class="w-full bg-gray-600/50 text-gray-400 font-bold py-3 px-6 rounded-lg cursor-not-allowed">
+            En attente...
+          </button>
+        </div>
+
+        <!-- Player 1 Card -->
+        <div class="bg-black/20 rounded-xl p-4 min-h-[200px] flex items-center justify-center">
+          <div *ngIf="playerStates.player1.card; else noCard1" class="w-full">
+            <app-fadu-card
+              [card]="playerStates.player1.sacrifice && playerStates.player1.sacrificeCard ? playerStates.player1.sacrificeCard : playerStates.player1.card"
+              [isActive]="currentPlayer === 'player1' && (phase === 'strategy' || phase === 'sacrifice')"
+              [isProcessing]="isProcessing" 
+              [currentPlayer]="currentPlayer" 
+              [gamePhase]="phase"
+              [selectedStrategy]="playerStates.player1.strategy || undefined" 
+              [strategies]="strategies"
+              [cardState]="'front'" 
+              (selectStrategy)="showStrateggySelector()"
+              (sacrificeDecision)="onSacrificeDecision($event)">
+            </app-fadu-card>
+          </div>
+          <ng-template #noCard1>
+            <div class="text-center text-amber-200/60">
+              <svg class="w-16 h-16 mx-auto mb-2 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+              </svg>
+              <p>Aucune carte</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Player 2 Dashboard -->
+      <div class="bg-gradient-to-br from-red-800/40 to-orange-900/40 backdrop-blur-sm rounded-2xl border border-red-400/30 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-bold">
+              2
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-amber-100">Joueur 2</h3>
+              <p class="text-amber-200/80 text-sm">PFH: {{ playerStates.player2.pfh }}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="px-3 py-1 rounded-full text-xs font-medium"
+                 [ngClass]="{
+                   'bg-green-500/20 text-green-300 border border-green-500/50': currentPlayer === 'player2' && phase === 'draw',
+                   'bg-yellow-500/20 text-yellow-300 border border-yellow-500/50': currentPlayer === 'player2' && phase !== 'draw',
+                   'bg-gray-500/20 text-gray-300 border border-gray-500/50': currentPlayer !== 'player2'
+                 }">
+              {{ currentPlayer === 'player2' ? (phase === 'draw' ? 'À votre tour' : 'En action') : 'En attente' }}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Player 2 Action Button -->
+        <div class="mb-4">
+          <button *ngIf="currentPlayer === 'player2' && phase === 'draw'" 
+                  (click)="onPlayClick()"
+                  class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+            <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+            </svg>
+            À vous de jouer
+          </button>
+          <button *ngIf="currentPlayer !== 'player2' || phase !== 'draw'" 
+                  disabled
+                  class="w-full bg-gray-600/50 text-gray-400 font-bold py-3 px-6 rounded-lg cursor-not-allowed">
+            En attente...
+          </button>
+        </div>
+
+        <!-- Player 2 Card -->
+        <div class="bg-black/20 rounded-xl p-4 min-h-[200px] flex items-center justify-center">
+          <div *ngIf="playerStates.player2.card && phase !== 'draw'; else noCard2" class="w-full">
+            <app-fadu-card
+              [card]="playerStates.player2.sacrifice && playerStates.player2.sacrificeCard ? playerStates.player2.sacrificeCard : playerStates.player2.card"
+              [isActive]="currentPlayer === 'player2' && (phase === 'strategy' || phase === 'sacrifice')"
+              [isProcessing]="isProcessing" 
+              [currentPlayer]="currentPlayer" 
+              [gamePhase]="phase"
+              [selectedStrategy]="playerStates.player2.strategy || undefined" 
+              [strategies]="strategies"
+              [cardState]="'front'" 
+              (selectStrategy)="showStrateggySelector()"
+              (sacrificeDecision)="onSacrificeDecision($event)">
+            </app-fadu-card>
+          </div>
+          <ng-template #noCard2>
+            <div class="text-center text-amber-200/60">
+              <svg class="w-16 h-16 mx-auto mb-2 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+              </svg>
+              <p>Aucune carte</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
     </div>
 
-    <!-- Tableau Récapitulatif -->
-    <footer class="game-footer">
-        <table class="recap-table">
-            <thead>
-                <tr>
-                    <th>Tour</th>
-                    <th>Favi 1 (Carte/Stratégie)</th>
-                    <th>Favi 2 (Carte/Stratégie)</th>
-                    <th>Gains PFH</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Fadu A / C</td>
-                    <td>Fadu B / V</td>
-                    <td>+20 / -5</td>
-                </tr>
-                <!-- Autres tours dynamiques -->
-            </tbody>
+    <!-- Central Game Area -->
+    <div class="bg-gradient-to-br from-black/40 to-black/60 backdrop-blur-sm rounded-3xl border border-amber-400/30 p-8 mb-8">
+      
+      <!-- Deck Area -->
+      <div class="text-center mb-8" *ngIf="phase === 'draw' && canDraw">
+        <div class="inline-block bg-gradient-to-br from-amber-700/50 to-orange-800/50 rounded-2xl p-6 border border-amber-400/40">
+          <div class="mb-4">
+            <img src="assets/cards/deck.png" alt="Deck de cartes Fadu" 
+                 class="w-32 h-48 mx-auto rounded-lg shadow-2xl border-2 border-amber-400/50" />
+          </div>
+          <button (click)="drawCard()" 
+                  class="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-400 hover:via-orange-400 hover:to-red-400 text-white font-bold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-xl">
+            <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
+            </svg>
+            Tirer une carte
+          </button>
+        </div>
+      </div>
+
+      <!-- Strategy Selection Area -->
+      <div *ngIf="phase === 'strategy' && strateggySelectorVisible[currentPlayer] && !playerStates[currentPlayer].strategy"
+           class="bg-amber-800/30 rounded-2xl p-6 border border-amber-400/40 mb-6">
+        <h3 class="text-xl font-bold text-amber-100 mb-4 text-center">Choisissez votre stratégie</h3>
+        <app-strateggy-selector 
+          [strategies]="strategies"
+          [selectedStrategy]="playerStates[currentPlayer].strategy || undefined"
+          [playerPFH]="playerStates[currentPlayer].pfh" 
+          [sacrificeCost]="14"
+          (selectStrategy)="onStrategySelected($event)">
+        </app-strateggy-selector>
+      </div>
+
+      <!-- Strategy Selection Button -->
+      <div class="text-center mb-6" 
+           *ngIf="phase === 'strategy' && !strateggySelectorVisible[currentPlayer] && !playerStates[currentPlayer].strategy">
+        <button (click)="showStrateggySelector()"
+                class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-xl">
+          <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+          </svg>
+          Choisir une stratégie
+        </button>
+      </div>
+
+      <!-- Reveal Phase Results -->
+      <div *ngIf="phase === 'reveal'" 
+           class="bg-gradient-to-r from-blue-800/40 to-purple-800/40 rounded-2xl p-6 border border-blue-400/40">
+        <h3 class="text-2xl font-bold text-center text-blue-100 mb-6">Résultats du tour {{ turn }}</h3>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="bg-blue-900/30 rounded-xl p-4 border border-blue-400/30">
+            <h4 class="font-bold text-blue-200 mb-2">Joueur 1</h4>
+            <p class="text-blue-100">Stratégie: {{ playerStates.player1.strategy }}</p>
+            <p class="text-green-300" *ngIf="playerStates.player1.sacrifice">🔥 Sacrifice utilisé</p>
+            <p class="text-yellow-300 font-bold">Gain: {{ gameHistory[turn-1]?.player1.gain || 0 }} PFH</p>
+          </div>
+          
+          <div class="bg-purple-900/30 rounded-xl p-4 border border-purple-400/30">
+            <h4 class="font-bold text-purple-200 mb-2">Joueur 2</h4>
+            <p class="text-purple-100">Stratégie: {{ playerStates.player2.strategy }}</p>
+            <p class="text-green-300" *ngIf="playerStates.player2.sacrifice">🔥 Sacrifice utilisé</p>
+            <p class="text-yellow-300 font-bold">Gain: {{ gameHistory[turn-1]?.player2.gain || 0 }} PFH</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- End Game Results -->
+      <div *ngIf="phase === 'results'" 
+           class="bg-gradient-to-r from-gold-800/40 to-yellow-800/40 rounded-2xl p-8 border border-yellow-400/40 text-center">
+        <h2 class="text-4xl font-bold text-yellow-100 mb-6">🏆 Fin de partie</h2>
+        
+        <div class="mb-6">
+          <div *ngIf="winner === 'player1'" class="text-2xl font-bold text-green-300">🎉 Victoire de Joueur 1 !</div>
+          <div *ngIf="winner === 'player2'" class="text-2xl font-bold text-green-300">🎉 Victoire de Joueur 2 !</div>
+          <div *ngIf="winner === null" class="text-2xl font-bold text-blue-300">🤝 Match nul !</div>
+        </div>
+        
+        <button (click)="nextTurn()" 
+                class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-xl">
+          <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+          </svg>
+          Rejouer
+        </button>
+      </div>
+    </div>
+
+    <!-- Game History Table -->
+    <div class="bg-gradient-to-br from-gray-800/40 to-gray-900/40 backdrop-blur-sm rounded-2xl border border-gray-400/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-amber-600/20 to-orange-600/20 px-6 py-4 border-b border-gray-400/30">
+        <h3 class="text-xl font-bold text-amber-100">📊 Historique de la partie</h3>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-black/20">
+            <tr class="text-amber-200 text-sm">
+              <th class="px-6 py-3 text-left">Tour</th>
+              <th class="px-6 py-3 text-left">Joueur 1 (Carte/Stratégie)</th>
+              <th class="px-6 py-3 text-left">Joueur 2 (Carte/Stratégie)</th>
+              <th class="px-6 py-3 text-left">Gains PFH</th>
+            </tr>
+          </thead>
+          <tbody class="text-orange-100">
+            <tr class="border-t border-gray-600/30 hover:bg-amber-800/10 transition-colors">
+              <td class="px-6 py-4 font-medium">1</td>
+              <td class="px-6 py-4">Fadu A / C</td>
+              <td class="px-6 py-4">Fadu B / V</td>
+              <td class="px-6 py-4">
+                <span class="text-green-400">+20</span> / 
+                <span class="text-red-400">-5</span>
+              </td>
+            </tr>
+            <!-- More dynamic rows will be added here -->
+          </tbody>
         </table>
-    </footer>
-
-    <!-- Fin de Partie -->
-    <div class="endgame-modal" style="display: none;">
-        <div class="endgame-content">
-            <h2>Victoire de Favi 1 !</h2>
-            <div class="recap-key-turns">
-                <p>Tour 3 : Fadu X / G - Décisif</p>
-                <!-- Autres tours clés -->
-            </div>
-            <button class="replay">Rejouer</button>
-            <button class="quit">Quiter</button>
-        </div>
+      </div>
     </div>
+  </main>
 
-    <!-- Panneau de Debug -->
-    <!-- Debug désactivé -->
+  <!-- Floating Elements -->
+  <div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+    <div class="animate-float-slow absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400 rounded-full opacity-30"></div>
+    <div class="animate-float-medium absolute top-3/4 right-1/3 w-1.5 h-1.5 bg-orange-400 rounded-full opacity-25"></div>
+    <div class="animate-float-fast absolute bottom-1/4 left-1/2 w-1 h-1 bg-red-400 rounded-full opacity-20"></div>
+  </div>
+</div>
+
+<!-- Modals -->
+<!-- Sacrifice Modal -->
+<div class="modal" style="display: none;">
+  <div class="modal-content">
+    <p>Dépenser 14 PFH pour tirer une carte supplémentaire ?</p>
+    <button class="confirm">Confirmer</button>
+    <button class="cancel">Annuler</button>
+    <div class="warning">PFH insuffisants !</div>
+  </div>
+</div>
+
+<!-- End Game Modal -->
+<div class="endgame-modal" style="display: none;">
+  <div class="endgame-content">
+    <h2>Victoire de Favi 1 !</h2>
+    <div class="recap-key-turns">
+      <p>Tour 3 : Fadu X / G - Décisif</p>
+    </div>
+    <button class="replay">Rejouer</button>
+    <button class="quit">Quitter</button>
+  </div>
 </div>
