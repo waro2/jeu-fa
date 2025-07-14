@@ -140,12 +140,9 @@ export class GameBoardComponent implements OnInit, OnDestroy {
         if (msg.type === 'game_state_update') {
             // Update local game state
             // Example: this.updateGameState(msg.data);
-        } else if (msg.type === 'turn_start') {
-            // Handle turn start
-        } else if (msg.type === 'turn_result') {
-            // Handle turn result
-        } else if (msg.type === 'game_end') {
-            // Handle game end
+        } else if (['turn_start', 'turn_result', 'game_end'].includes(msg.type)) {
+            // Handle turn events and game end
+            console.log(`Received ${msg.type} event:`, msg);
         }
     }
 
