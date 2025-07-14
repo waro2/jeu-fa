@@ -7,4 +7,5 @@ export const routes: Routes = [
     { path: 'game-board', loadComponent: () => import('./pages/game/game-board.component').then(m => m.GameBoardComponent), canActivate: [AuthGuard] },
     { path: 'login', loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent) },
     { path: 'register', loadComponent: () => import('./pages/auth/register/register.component').then(m => m.RegisterComponent) },
+    { path: 'user-profile', loadComponent: () => import('./pages/auth/user-profile/user-profile.component').then(m => m.UserProfileComponent), canActivate: [AuthGuard] },
 ];

@@ -1,21 +1,24 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../../services/api.service';
 
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [ReactiveFormsModule, CommonModule],
+    imports: [ReactiveFormsModule, CommonModule, RouterLink],
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
     form: FormGroup;
     errorMessage: string | null = null;
+    isLoading = false;
+    showPassword = false;
+    showPasswordConfirm = false;
 
-    constructor(private fb: FormBuilder, private router: Router, private api: ApiService) {
+    constructor(private readonly fb: FormBuilder, private readonly router: Router, private readonly api: ApiService) {
         this.form = this.fb.group({
             username: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
@@ -26,17 +29,22 @@ export class RegisterComponent {
 
     onSubmit() {
         this.errorMessage = null;
+        this.isLoading = true; // Set loading state to true
         if (this.form.valid) {
             const password = this.form.value.password;
             const confirm = this.form.value.passwordConfirm;
             if (!this.validatePassword(password)) {
+                this.isLoading = false; // Reset loading state on error
                 return;
             }
             if (password !== confirm) {
                 this.errorMessage = 'Les mots de passe ne correspondent pas.';
+                this.isLoading = false; // Reset loading state on error
                 return;
             }
             this.register();
+        } else {
+            this.isLoading = false; // Reset loading state if form is invalid
         }
     }
 
@@ -96,8 +104,50 @@ export class RegisterComponent {
                 }
                 this.errorMessage = msg;
                 console.error('Registration failed:', error);
+            },
+            complete: () => {
+                this.isLoading = false; // Reset loading state on completion
             }
         });
 
+    }
+
+    togglePasswordVisibility() {
+        this.showPassword = !this.showPassword;
+    }
+
+    togglePasswordConfirmVisibility() {
+        this.showPasswordConfirm = !this.showPasswordConfirm;
+    }
+
+    // Getters for form field states
+    get usernameInvalid(): boolean {
+        const control = this.form.get('username');
+        return !!control && control.invalid && control.touched;
+    }
+
+    get emailInvalid(): boolean {
+        const control = this.form.get('email');
+        return !!control && control.invalid && control.touched;
+    }
+
+    get passwordInvalid(): boolean {
+        const control = this.form.get('password');
+        return !!control && control.invalid && control.touched;
+    }
+
+    get passwordConfirmInvalid(): boolean {
+        const control = this.form.get('passwordConfirm');
+        return !!control && control.invalid && control.touched;
+    }
+
+    get passwordsNotMatching(): boolean {
+        const password = this.form.get('password')?.value;
+        const passwordConfirm = this.form.get('passwordConfirm')?.value;
+        return password !== passwordConfirm && this.form.get('passwordConfirm')?.touched;
+    }
+
+    get isFormDisabled(): boolean {
+        return this.form.invalid || this.isLoading;
     }
 }

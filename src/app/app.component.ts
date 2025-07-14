@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FooterComponent } from './pages/shared/footer/footer.component';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { HeaderComponent } from './pages/shared/header/header.component';
 import { WebsocketTesterComponent } from './components/websocket-tester/websocket-tester.component';
 import { WebsocketService } from './services/websocket.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -12,8 +13,30 @@ import { WebsocketService } from './services/websocket.service';
   styleUrls: ['./app.component.scss'],
   imports: [CommonModule, FooterComponent, RouterOutlet, HeaderComponent, WebsocketTesterComponent],
   providers: [WebsocketService],
-  standalone: true
+  standalone: true,
+  host: {
+    '[class.auth-page]': 'isAuthPage'
+  }
 })
-export class AppComponent {
-  // Clean component - WebSocket testing logic moved to WebsocketTesterComponent
+export class AppComponent implements OnInit {
+  isAuthPage = false;
+
+  constructor(private readonly router: Router) {}
+
+  ngOnInit() {
+    // Check current route initially
+    this.checkIfAuthPage(this.router.url);
+
+    // Listen to route changes
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.checkIfAuthPage(event.url);
+      });
+  }
+
+  private checkIfAuthPage(url: string): void {
+    // Check if current route is an auth page (login or register)
+    this.isAuthPage = url.includes('/login') || url.includes('/register');
+  }
 }
