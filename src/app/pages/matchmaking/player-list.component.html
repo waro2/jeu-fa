@@ -1,9 +1,21 @@
-<div class="players-section">
-  <h3>Joueurs connectés</h3>
-  <ul class="players-list">
-    <li *ngFor="let player of players">
-      <img [src]="player.avatar" alt="Avatar" class="avatar" />
-      <span>{{ player.pseudo }}</span>
-    </li>
-  </ul>
+<!-- Standalone Players List Component -->
+<div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-orange-100">
+  <h3 class="text-xl font-bold text-amber-800 mb-4 flex items-center gap-2">
+    👥 Joueurs connectés
+  </h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div *ngFor="let player of players" 
+         class="flex items-center gap-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-200 hover:shadow-md transition-all duration-300">
+      <img [src]="player.avatar" alt="Avatar" 
+           class="w-10 h-10 rounded-full border-2 border-orange-300 object-cover" 
+           (error)="$event.target.src='assets/images/boconon-okpele.png'" />
+      <span class="font-medium text-amber-800 text-sm">{{ player.pseudo }}</span>
+    </div>
+  </div>
+  
+  <!-- Empty state -->
+  <div *ngIf="players.length === 0" class="text-center py-8">
+    <div class="text-4xl mb-2">🔍</div>
+    <p class="text-amber-700/70">Aucun joueur connecté pour le moment</p>
+  </div>
 </div>

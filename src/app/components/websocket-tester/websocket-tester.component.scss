@@ -1,0 +1,19 @@
+/* WebSocket Tester Component Styles */
+
+/* Custom scrollbar for the messages log */
+.websocket-tester ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.websocket-tester ::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+.websocket-tester ::-webkit-scrollbar-thumb {
+  background: #6b7280;
+  border-radius: 4px;
+}
+
+.websocket-tester ::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}

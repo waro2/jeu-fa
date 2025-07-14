@@ -1,125 +1,72 @@
-.game-footer {
-    background: linear-gradient(90deg, #f7b42c 0%, #ffd452 100%);
-    color: #232946;
-    padding: 2.5rem 0 1.2rem 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
+/* Footer Component Styles */
+/* Most styling is now handled by Tailwind CSS classes */
+
+/* Custom animations for floating elements */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
-.footer-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    max-width: 1200px;
-    margin: 0 auto;
-    gap: 2rem;
+@keyframes float-medium {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
 }
 
-.footer-section {
-    flex: 1 1 220px;
-    min-width: 220px;
-    margin-bottom: 1.5rem;
+@keyframes float-fast {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-.footer-section h3 {
-    color: #185a9d;
-    margin-bottom: 0.7rem;
-    font-size: 1.2rem;
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
 }
 
-.footer-section p {
-    margin: 0.3rem 0 0.7rem 0;
-    font-style: italic;
-    color: #185a9d;
+.animate-float-medium {
+  animation: float-medium 4s ease-in-out infinite;
 }
 
-.game-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-    font-size: 0.98rem;
-    color: #185a9d;
+.animate-float-fast {
+  animation: float-fast 3s ease-in-out infinite;
 }
 
-.footer-section ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+/* Custom focus styles for better accessibility */
+footer input:focus,
+footer button:focus {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
 }
 
-.footer-section ul li {
-    margin-bottom: 0.5rem;
+/* Smooth hover transitions for links */
+footer a {
+  transition: all 0.3s ease;
 }
 
-.footer-section ul li a {
-    color: #232946;
-    text-decoration: none;
-    transition: color 0.2s;
+/* Custom scrollbar for overflow areas if needed */
+footer ::-webkit-scrollbar {
+  width: 8px;
 }
 
-.footer-section ul li a:hover {
-    color: #185a9d;
+footer ::-webkit-scrollbar-track {
+  background: #374151;
 }
 
-.social-section .social-icons {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 0.7rem;
+footer ::-webkit-scrollbar-thumb {
+  background: #6b7280;
+  border-radius: 4px;
 }
 
-.social-section .social-icons a {
-    color: #232946;
-    font-size: 1.3rem;
-    transition: color 0.2s;
-}
-
-.social-section .social-icons a:hover {
-    color: #185a9d;
-}
-
-.newsletter {
-    margin-top: 0.7rem;
-}
-
-.newsletter-input {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.3rem;
-}
-
-.newsletter-input input[type="email"] {
-    padding: 0.5rem 0.8rem;
-    border-radius: 0.4rem;
-    border: none;
-    font-size: 1rem;
-    outline: none;
-}
-
-.newsletter-input button {
-    background: #185a9d;
-    color: #fff;
-    border: none;
-    border-radius: 0.4rem;
-    padding: 0.5rem 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.newsletter-input button:hover {
-    background: #ffd452;
-    color: #232946;
-}
-
-@media (max-width: 900px) {
-    .footer-container {
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-    }
-
-    .footer-section {
-        min-width: 0;
-        width: 100%;
-        text-align: center;
-    }
+footer ::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }

@@ -1,0 +1,73 @@
+<div class="websocket-tester bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">Angular WebSocket Tester</h2>
+  
+  <!-- Connection Controls -->
+  <div class="bg-gray-50 p-4 rounded-lg mb-6">
+    <div class="flex flex-wrap gap-4 items-center mb-4">
+      <div class="flex flex-col">
+        <label for="wsType" class="text-sm font-medium text-gray-700 mb-1">Type:</label>
+        <select id="wsType" [(ngModel)]="wsType" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="player">Player</option>
+          <option value="game">Game</option>
+          <option value="matchmaking">Matchmaking</option>
+          <option value="test">Test</option>
+        </select>
+      </div>
+      
+      <div class="flex flex-col">
+        <label for="playerId" class="text-sm font-medium text-gray-700 mb-1">Player ID:</label>
+        <input id="playerId" [(ngModel)]="playerId" type="number" 
+               class="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      
+      <div class="flex flex-col" *ngIf="wsType === 'game'">
+        <label for="gameId" class="text-sm font-medium text-gray-700 mb-1">Game ID:</label>
+        <input id="gameId" [(ngModel)]="gameId" type="number" 
+               class="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+    </div>
+    
+    <div class="flex gap-3">
+      <button (click)="connect()" 
+              class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors font-medium">
+        Connect
+      </button>
+      <button (click)="disconnect()" 
+              class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-medium">
+        Disconnect
+      </button>
+    </div>
+  </div>
+
+  <!-- Message Sending -->
+  <div class="bg-gray-50 p-4 rounded-lg mb-6">
+    <div class="flex gap-3 items-center">
+      <input [(ngModel)]="testMsg" placeholder="Message to send" 
+             class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <button (click)="sendTestMsg()" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
+        Send Test Message
+      </button>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="mb-4">
+    <span class="text-sm font-medium text-gray-700">Status:</span>
+    <span class="ml-2 px-2 py-1 rounded-full text-xs font-medium"
+          [ngClass]="{
+            'bg-green-100 text-green-800': status === 'OPEN',
+            'bg-red-100 text-red-800': status === 'CLOSED',
+            'bg-yellow-100 text-yellow-800': status === 'CONNECTING'
+          }">
+      {{ status }}
+    </span>
+  </div>
+
+  <!-- Messages Log -->
+  <div class="bg-gray-900 text-green-400 p-4 rounded-lg h-64 overflow-auto font-mono text-sm">
+    <div class="text-gray-400 mb-2">WebSocket Messages:</div>
+    <div *ngFor="let msg of messages" class="mb-1">{{ msg }}</div>
+    <div *ngIf="messages.length === 0" class="text-gray-500 italic">No messages yet...</div>
+  </div>
+</div>

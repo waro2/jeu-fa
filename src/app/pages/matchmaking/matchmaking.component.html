@@ -1,59 +1,147 @@
-<div class="matchmaking-container">
-  <div class="status-section">
-    <div class="search-status">
-      <span class="loader"></span>
-      <span>En attente d'un adversaire...</span>
+<!-- Main Container with African-inspired Background -->
+<div class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 relative overflow-hidden">
+  <!-- Floating Decorative Elements -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-amber-200/30 to-orange-300/30 rounded-full blur-xl animate-pulse"></div>
+    <div class="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-red-200/30 to-amber-300/30 rounded-full blur-lg animate-pulse delay-1000"></div>
+    <div class="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-br from-orange-200/20 to-red-200/20 rounded-full blur-2xl animate-pulse delay-2000"></div>
+  </div>
+
+  <!-- Main Content Container -->
+  <div class="relative z-10 flex flex-col items-center justify-start min-h-screen px-4 py-8">
+    <!-- Header Section -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 bg-clip-text text-transparent mb-2">
+        🔍 Recherche d'Adversaire
+      </h1>
+      <p class="text-amber-700/80 text-lg">Trouvez votre prochain défi au Fa</p>
     </div>
-    <div class="timer">Recherche depuis 0:45</div>
-  </div>
 
-  <div class="players-section">
-    <h3>Joueurs connectés</h3>
-    <ul class="players-list">
-      <li *ngFor="let player of players">
-        <img [src]="player.avatar" alt="Avatar" class="avatar" />
-        <span>{{ player.pseudo }}</span>
-      </li>
-    </ul>
-  </div>
+    <!-- Status Section -->
+    <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-6 w-full max-w-md border border-orange-100">
+      <div class="text-center">
+        <div class="flex items-center justify-center gap-3 mb-3">
+          <div class="w-6 h-6 border-3 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
+          <span class="text-lg font-semibold text-amber-800">En attente d'un adversaire...</span>
+        </div>
+        <div class="text-amber-700 bg-amber-50 rounded-lg px-4 py-2 inline-block">
+          ⏱️ Recherche depuis <span class="font-bold">0:45</span>
+        </div>
+      </div>
+    </div>
 
-  <div class="params-section">
-    <h3>Paramètres</h3>
-    <div class="param"><span>PFH initiaux :</span> <strong>100</strong></div>
-    <div class="param"><span>Nombre de tours max :</span> <strong>10</strong></div>
-  </div>
+    <!-- Players Section -->
+    <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-6 w-full max-w-md border border-orange-100">
+      <h3 class="text-xl font-bold text-amber-800 mb-4 flex items-center gap-2">
+        👥 Joueurs connectés
+      </h3>
+      <div class="grid grid-cols-2 gap-3">
+        <div *ngFor="let player of players" 
+             class="flex items-center gap-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-200 hover:shadow-md transition-all duration-300">
+          <img [src]="player.avatar" alt="Avatar" 
+               class="w-10 h-10 rounded-full border-2 border-orange-300 object-cover" 
+               (error)="onImageError($event)" />
+          <span class="font-medium text-amber-800 text-sm">{{ player.pseudo }}</span>
+        </div>
+      </div>
+    </div>
 
-  <div class="mode-section">
-    <h3>Mode de Jeu</h3>
-    <div class="mode-buttons">
-      <button class="mode-btn">1vs1 Rapide</button>
-      <button class="mode-btn">Tournoi</button>
-      <button class="mode-btn">Amis</button>
+    <!-- Game Parameters Section -->
+    <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-6 w-full max-w-md border border-orange-100">
+      <h3 class="text-xl font-bold text-amber-800 mb-4 flex items-center gap-2">
+        ⚙️ Paramètres
+      </h3>
+      <div class="space-y-3">
+        <div class="flex justify-between items-center p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
+          <span class="text-amber-700">PFH initiaux :</span>
+          <span class="font-bold text-orange-600 bg-white px-3 py-1 rounded-full text-sm">100</span>
+        </div>
+        <div class="flex justify-between items-center p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
+          <span class="text-amber-700">Nombre de tours max :</span>
+          <span class="font-bold text-orange-600 bg-white px-3 py-1 rounded-full text-sm">10</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Mode Section -->
+    <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-6 w-full max-w-md border border-orange-100">
+      <h3 class="text-xl font-bold text-amber-800 mb-4 flex items-center gap-2">
+        🎮 Mode de Jeu
+      </h3>
+      <div class="grid grid-cols-1 gap-3">
+        <button class="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+          ⚡ 1vs1 Rapide
+        </button>
+        <button class="bg-gradient-to-r from-orange-400 to-red-500 hover:from-red-500 hover:to-pink-500 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+          🏆 Tournoi
+        </button>
+        <button class="bg-gradient-to-r from-red-400 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+          👫 Amis
+        </button>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+      <button (click)="startGame()" 
+              class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+        🚀 Recherche Rapide
+      </button>
+      <button (click)="showInviteModal = true"
+              class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-indigo-600 hover:to-blue-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+        📧 Inviter un Ami
+      </button>
+      <button class="flex-1 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+        ❌ Annuler
+      </button>
     </div>
   </div>
 
-  <div class="actions-section">
-    <button class="search-btn" (click)="startGame()">Recherche Rapide</button>
-    <button class="invite-btn">Inviter un Ami</button>
-    <button class="cancel-btn">Annuler</button>
-  </div>
-
-  <!-- Modal Invitation -->
-  <div class="modal" style="display: none;">
-    <div class="modal-content">
-      <h4>Inviter un ami</h4>
-      <p>Partagez ce code :</p>
-      <div class="invite-code">ABC123</div>
-      <button class="close-modal">Fermer</button>
+  <!-- Invite Modal -->
+  <dialog *ngIf="showInviteModal" 
+          class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 border-0 max-w-none max-h-none"
+          [open]="showInviteModal"
+          (click)="showInviteModal = false"
+          (keydown.escape)="showInviteModal = false"
+          aria-labelledby="invite-modal-title">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full transform transition-all duration-300"
+         (click)="$event.stopPropagation()"
+         (keydown)="$event.stopPropagation()">
+      <div class="text-center">
+        <div class="text-4xl mb-4">📧</div>
+        <h4 id="invite-modal-title" class="text-2xl font-bold text-amber-800 mb-2">Inviter un ami</h4>
+        <p class="text-amber-700 mb-6">Partagez ce code avec votre ami :</p>
+        <div class="bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-orange-300 rounded-xl p-4 mb-6">
+          <div class="text-2xl font-bold text-orange-600 tracking-wider">ABC123</div>
+        </div>
+        <div class="flex gap-3">
+          <button class="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 hover:shadow-lg">
+            📋 Copier
+          </button>
+          <button (click)="showInviteModal = false"
+                  class="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300">
+            Fermer
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
+  </dialog>
 
-  <!-- Popup Match trouvé -->
-  <div class="popup" style="display: none;">
-    <div class="popup-content">
-      <h4>Match trouvé !</h4>
-      <p>Adversaire : <strong>FaviMaster</strong></p>
-      <button class="start-match" (click)="startGame()">Commencer</button>
+  <!-- Match Found Popup -->
+  <div *ngIf="showMatchFoundPopup" 
+       class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full transform transition-all duration-300 animate-bounce">
+      <div class="text-center">
+        <div class="text-5xl mb-4">🎉</div>
+        <h4 class="text-2xl font-bold text-green-600 mb-2">Match trouvé !</h4>
+        <p class="text-amber-700 mb-6">
+          Adversaire : <span class="font-bold text-orange-600">FaviMaster</span>
+        </p>
+        <button (click)="startGame()" 
+                class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+          🚀 Commencer le Match
+        </button>
+      </div>
     </div>
   </div>
 </div>

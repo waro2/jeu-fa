@@ -1,41 +1,26 @@
-.players-section {
-  background: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 4px 16px 0 rgba(24, 90, 157, 0.08);
-  padding: 1.2rem 2rem;
-  margin-bottom: 2rem;
-  width: 100%;
-  max-width: 420px;
+/* Modern styles for the standalone player list component */
+
+/* Focus styles for better accessibility */
+img:focus {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
 }
 
-.players-section h3 {
-  color: #185a9d;
-  margin-bottom: 0.7rem;
+/* Custom scrollbar if needed */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-.players-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
+::-webkit-scrollbar-track {
+  background: #fef3c7;
+  border-radius: 3px;
 }
 
-.players-list li {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: #eaf6fb;
-  border-radius: 0.7rem;
-  padding: 0.4rem 1rem;
-  font-weight: 500;
-  color: #185a9d;
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #f59e0b, #ea580c);
+  border-radius: 3px;
 }
 
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid #b2f0ff;
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #ea580c, #dc2626);
 }
