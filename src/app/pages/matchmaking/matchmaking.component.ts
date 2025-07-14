@@ -21,10 +21,13 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
 
   wsStatus: WebSocketStatus = 'CLOSED';
   wsMessages: any[] = [];
+  showInviteModal = false;
+  showMatchFoundPopup = false;
+  
   private wsStatusSub?: Subscription;
   private wsMsgSub?: Subscription;
 
-  constructor(private router: Router, private ws: WebsocketService) { }
+  constructor(private readonly router: Router, private readonly ws: WebsocketService) { }
 
   ngOnInit() {
     // Connect to the matchmaking WebSocket endpoint
@@ -52,9 +55,13 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
     // Handle matchmaking status, match found, etc.
     if (msg.type === 'matchmaking_status') {
       // Update local queue status
+      console.log('Matchmaking status update:', msg);
     } else if (msg.type === 'match_found') {
-      // Handle match found (navigate to game, etc.)
-      // Example: this.router.navigate(['/game-board'], { queryParams: { gameId: msg.data.game_id } });
+      // Handle match found (show popup and navigate to game)
+      this.showMatchFoundPopup = true;
+      setTimeout(() => {
+        this.router.navigate(['/game-board'], { queryParams: { gameId: msg.data?.game_id } });
+      }, 3000);
     }
   }
 
@@ -72,5 +79,10 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
 
   startGame() {
     this.router.navigate(['/game-board']);
+  }
+
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/images/boconon-okpele.png';
   }
 }

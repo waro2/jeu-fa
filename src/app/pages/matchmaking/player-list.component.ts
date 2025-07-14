@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 interface Player {
   pseudo: string;
@@ -10,14 +10,14 @@ interface Player {
 @Component({
   selector: 'app-player-list',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule],
   templateUrl: './player-list.component.html',
   styleUrls: ['./player-list.component.scss']
 })
 export class PlayerListComponent implements OnInit {
   players: Player[] = [];
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   ngOnInit() {
     this.http.get<Player[]>('/api/players/online').subscribe({
