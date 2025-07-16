@@ -5,6 +5,7 @@ import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { HeaderComponent } from './pages/shared/header/header.component';
 import { WebsocketTesterComponent } from './components/websocket-tester/websocket-tester.component';
 import { WebsocketService } from './services/websocket.service';
+import { AuthService } from './services/auth.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -21,7 +22,10 @@ import { filter } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   isAuthPage = false;
 
-  constructor(private readonly router: Router) {}
+  constructor(
+    private readonly router: Router,
+    private readonly authService: AuthService
+  ) {}
 
   ngOnInit() {
     // Check current route initially
@@ -33,6 +37,24 @@ export class AppComponent implements OnInit {
       .subscribe((event: any) => {
         this.checkIfAuthPage(event.url);
       });
+
+    // Establish WebSocket connection for already authenticated users
+    this.establishWebSocketForAuthenticatedUser();
+  }
+
+  /**
+   * Check if a user is already authenticated and establish WebSocket connection
+   */
+  private establishWebSocketForAuthenticatedUser(): void {
+    if (this.authService.isLoggedIn()) {
+      const userInfo = this.authService.getUserInfo();
+      console.log('App initialized - Found authenticated user:', userInfo);
+      
+      if (userInfo?.id) {
+        console.log('Establishing WebSocket connection for authenticated user:', userInfo.id);
+        this.authService.reconnectWebSocket();
+      }
+    }
   }
 
   private checkIfAuthPage(url: string): void {

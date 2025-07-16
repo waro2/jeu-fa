@@ -6,10 +6,19 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
     <div *ngFor="let player of players" 
          class="flex items-center gap-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-200 hover:shadow-md transition-all duration-300">
-      <img [src]="player.avatar" alt="Avatar" 
-           class="w-10 h-10 rounded-full border-2 border-orange-300 object-cover" 
-           (error)="$event.target.src='assets/images/boconon-okpele.png'" />
-      <span class="font-medium text-amber-800 text-sm">{{ player.pseudo }}</span>
+      <div class="relative">
+        <img [src]="player.avatar" alt="Avatar" 
+             class="w-10 h-10 rounded-full border-2 border-orange-300 object-cover" 
+             (error)="onImageError($event)" />
+        <div class="absolute -bottom-1 -right-1 w-3 h-3 rounded-full" 
+             [ngClass]="{'bg-green-500': !usingDemoData, 'bg-amber-400': usingDemoData}"
+             title="{{ usingDemoData ? 'Demo data' : 'Connected player' }}"
+             aria-hidden="true"></div>
+      </div>
+      <div class="flex flex-col">
+        <span class="font-medium text-amber-800 text-sm">{{ player.pseudo }}</span>
+        <span *ngIf="player.status" class="text-xs text-amber-600">{{ player.status }}</span>
+      </div>
     </div>
   </div>
   

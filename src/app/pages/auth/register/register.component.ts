@@ -117,10 +117,12 @@ export class RegisterComponent {
 
     togglePasswordVisibility() {
         this.showPassword = !this.showPassword;
+        console.log('Password visibility toggled:', this.showPassword);
     }
 
     togglePasswordConfirmVisibility() {
         this.showPasswordConfirm = !this.showPasswordConfirm;
+        console.log('Password confirm visibility toggled:', this.showPasswordConfirm);
     }
 
     // Getters for form field states
