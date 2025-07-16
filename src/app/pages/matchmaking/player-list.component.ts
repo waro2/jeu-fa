@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
-interface Player {
+export interface Player {
+  id?: string;
   pseudo: string;
   avatar: string;
+  status?: string;
+  rating?: number;
 }
 
 @Component({
@@ -14,15 +17,15 @@ interface Player {
   templateUrl: './player-list.component.html',
   styleUrls: ['./player-list.component.scss']
 })
-export class PlayerListComponent implements OnInit {
-  players: Player[] = [];
-
-  constructor(private readonly http: HttpClient) { }
-
-  ngOnInit() {
-    this.http.get<Player[]>('/api/players/online').subscribe({
-      next: (data: Player[]) => this.players = data,
-      error: () => this.players = []
-    });
+export class PlayerListComponent {
+  @Input() players: Player[] = [];
+  @Input() usingDemoData = false;
+  
+  /**
+   * Handle image loading errors
+   */
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/images/boconon-okpele.png';
   }
 }

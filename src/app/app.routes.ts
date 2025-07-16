@@ -8,4 +8,5 @@ export const routes: Routes = [
     { path: 'login', loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent) },
     { path: 'register', loadComponent: () => import('./pages/auth/register/register.component').then(m => m.RegisterComponent) },
     { path: 'user-profile', loadComponent: () => import('./pages/auth/user-profile/user-profile.component').then(m => m.UserProfileComponent), canActivate: [AuthGuard] },
+    { path: 'ws-test', loadComponent: () => import('./components/websocket-tester/websocket-tester.component').then(m => m.WebsocketTesterComponent) },
 ];

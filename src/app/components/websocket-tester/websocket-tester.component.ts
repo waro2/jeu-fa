@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./websocket-tester.component.scss']
 })
 export class WebsocketTesterComponent implements OnDestroy {
-  wsType: 'player' | 'game' | 'matchmaking' | 'test' = 'test';
+  wsType: 'player' | 'game' | 'matchmaking' | 'test' = 'matchmaking';
   playerId: number = 1;
   gameId: number = 1;
   testMsg: string = '';
@@ -52,6 +52,15 @@ export class WebsocketTesterComponent implements OnDestroy {
       } else {
         this.ws.sendMessage('test', this.testMsg || 'Hello from Angular!');
       }
+    }
+  }
+
+  getOnlinePlayers() {
+    if (this.status === 'OPEN') {
+      console.log('Requesting online players...');
+      this.ws.sendMessage('get_online_players');
+    } else {
+      console.warn('WebSocket not connected. Cannot request online players.');
     }
   }
 

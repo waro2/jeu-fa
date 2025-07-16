@@ -41,12 +41,19 @@
 
   <!-- Message Sending -->
   <div class="bg-gray-50 p-4 rounded-lg mb-6">
-    <div class="flex gap-3 items-center">
+    <div class="flex gap-3 items-center mb-4">
       <input [(ngModel)]="testMsg" placeholder="Message to send" 
              class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
       <button (click)="sendTestMsg()" 
               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
         Send Test Message
+      </button>
+    </div>
+    
+    <div class="flex justify-center">
+      <button (click)="getOnlinePlayers()" 
+              class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors font-medium">
+        Get Online Players
       </button>
     </div>
   </div>
