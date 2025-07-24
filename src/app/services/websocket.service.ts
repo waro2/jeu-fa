@@ -15,23 +15,24 @@ export class WebsocketService implements OnDestroy {
 
     connectPlayer(playerId: string, baseUrl?: string) {
         const serverUrl = baseUrl || this.getWebSocketBaseUrl();
-        const url = `${serverUrl}/api/v1/websocket/websocket/ws/player/${playerId}`;
-        console.log('Connecting to player WebSocket at:', url);
+        const url = `${serverUrl}/api/v1/websocket/ws/player/${playerId}`;
+        console.log(typeof playerId)
         this.connectPlayerWebSocket(url);
     }
 
     connectGame(gameId: string, playerId: string, baseUrl?: string) {
         const serverUrl = baseUrl || this.getWebSocketBaseUrl();
-        const url = `${serverUrl}/api/v1/websocket/websocket/ws/game/${gameId}?player_id=${playerId}`;
+        const url = `${serverUrl}/api/v1/websocket/ws/game/${gameId}?player_id=${playerId}`;
         console.log('Connecting to game WebSocket at:', url);
         this.connectPlayerWebSocket(url);
     }
 
-    connectMatchmaking(baseUrl?: string) {
+    connectMatchmaking(playerId: string, baseUrl?: string) {
         // Use environment-specific base URL or default to localhost
         const serverUrl = baseUrl || this.getWebSocketBaseUrl();
-        const url = `${serverUrl}/api/v1/websocket/websocket/ws/matchmaking`;
+        const url = `${serverUrl}/api/v1/websocket/ws/matchmaking?player_id=${playerId}`;
         console.log('Connecting to matchmaking WebSocket at:', url);
+        console.log('Player ID type:', typeof playerId, 'Player ID value:', playerId);
         this.connectMatchmakingWebSocket(url);
     }
     
@@ -97,6 +98,7 @@ export class WebsocketService implements OnDestroy {
 
     private connectMatchmakingWebSocket(url: string) {
         this.currentMatchmakingUrl = url;
+        this.statusSubject.next('CONNECTING');
 
         if (this.matchmakingWs) {
             this.matchmakingWs.close();
@@ -105,13 +107,28 @@ export class WebsocketService implements OnDestroy {
         try {
             this.matchmakingWs = new WebSocket(url);
             console.log('Matchmaking WebSocket connecting to:', url);
+            console.log('WebSocket ready state after creation:', this.matchmakingWs.readyState);
+            
+            // Add a connection timeout
+            const connectionTimeout = setTimeout(() => {
+                if (this.matchmakingWs && this.matchmakingWs.readyState === WebSocket.CONNECTING) {
+                    console.error('Matchmaking WebSocket connection timeout after 10 seconds');
+                    console.log('WebSocket ready state on timeout:', this.matchmakingWs.readyState);
+                    this.matchmakingWs.close();
+                    this.statusSubject.next('ERROR');
+                }
+            }, 10000); // 10 second timeout
             
             this.matchmakingWs.onopen = () => {
+                clearTimeout(connectionTimeout);
                 console.log('Matchmaking WebSocket connection established');
+                this.statusSubject.next('OPEN');
             };
 
             this.matchmakingWs.onclose = (event: CloseEvent) => {
+                clearTimeout(connectionTimeout);
                 console.log('Matchmaking WebSocket connection closed, code:', event.code);
+                this.statusSubject.next('CLOSED');
                 
                 // Auto-reconnect after 3 seconds if not manually closed
                 if (event.code !== 1000) { // 1000 is normal closure
@@ -123,7 +140,9 @@ export class WebsocketService implements OnDestroy {
             };
 
             this.matchmakingWs.onerror = (error: Event) => {
+                clearTimeout(connectionTimeout);
                 console.error('Matchmaking WebSocket error:', error);
+                this.statusSubject.next('ERROR');
             };
 
             this.matchmakingWs.onmessage = (event: MessageEvent) => {
@@ -131,17 +150,18 @@ export class WebsocketService implements OnDestroy {
             };
         } catch (error) {
             console.error('Error creating matchmaking WebSocket connection:', error);
+            this.statusSubject.next('ERROR');
         }
     }
 
     private handleWebSocketMessage(event: MessageEvent, source: 'player' | 'matchmaking') {
         try {
-            console.log(`Raw WebSocket message received from ${source}:`, event.data);
             let parsedData;
             
             // Try to parse as JSON
             try {
                 parsedData = JSON.parse(event.data);
+                console.log(parsedData)
             } catch (parseError) {
                 console.warn('Failed to parse WebSocket message as JSON:', parseError);
                 
@@ -195,7 +215,7 @@ export class WebsocketService implements OnDestroy {
 
     connectTest(baseUrl?: string) {
         const serverUrl = baseUrl || this.getWebSocketBaseUrl();
-        const url = `${serverUrl}/api/v1/websocket/websocket/ws/test`;
+        const url = `${serverUrl}/api/v1/websocket/ws/test`;
         console.log('Connecting to test WebSocket at:', url);
         this.connectPlayerWebSocket(url);
     }
