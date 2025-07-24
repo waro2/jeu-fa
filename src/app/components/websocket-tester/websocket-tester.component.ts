@@ -35,7 +35,8 @@ export class WebsocketTesterComponent implements OnDestroy {
     } else if (this.wsType === 'game') {
       this.ws.connectGame(this.gameId.toString(), this.playerId.toString());
     } else if (this.wsType === 'matchmaking') {
-      this.ws.connectMatchmaking();
+      const playerId = 4; // Replace with actual player ID logic
+      this.ws.connectMatchmaking(playerId.toString());
     } else {
       this.ws.connectTest();
     }

@@ -76,6 +76,10 @@ export class LoginComponent {
                     
                     // Use AuthService to handle login and WebSocket connection
                     this.authService.login(response.access_token, userInfo);
+                    console.log('User info set in AuthService:', response, userInfo);
+                    
+                    // Store user_id separately for WebSocket connections
+                    localStorage.setItem('user_id', response.user_id);
                     
                     // Also save additional user data for profile
                     localStorage.setItem('user', JSON.stringify({

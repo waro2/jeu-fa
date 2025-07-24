@@ -40,8 +40,16 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
     this.setDemoPlayers();
     
     // Connect to the matchmaking WebSocket endpoint
-    this.ws.connectMatchmaking();
+    const playerId = this.authService.getUserId();
     
+    if (!playerId) {
+      console.error('Cannot connect to matchmaking WebSocket: No player ID available. User must be logged in.');
+      // You might want to redirect to login or show an error message
+      return;
+    }
+    console.log('Connecting to matchmaking WebSocket for player ID:', playerId);
+    this.ws.connectMatchmaking(playerId);
+
     // Monitor WebSocket status and update UI accordingly
     this.wsStatusSub = this.ws.status$.subscribe((status: WebSocketStatus) => {
       this.wsStatus = status;

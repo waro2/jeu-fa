@@ -15,22 +15,22 @@ export class WebsocketService implements OnDestroy {
 
     connectPlayer(playerId: string, baseUrl?: string) {
         const serverUrl = baseUrl || this.getWebSocketBaseUrl();
-        const url = `${serverUrl}/api/v1/websocket/websocket/ws/player/${playerId}`;
-        console.log('Connecting to player WebSocket at:', url);
+        const url = `${serverUrl}/api/v1/websocket/ws/player/${playerId}`;
+        console.log(typeof playerId)
         this.connectPlayerWebSocket(url);
     }
 
     connectGame(gameId: string, playerId: string, baseUrl?: string) {
         const serverUrl = baseUrl || this.getWebSocketBaseUrl();
-        const url = `${serverUrl}/api/v1/websocket/websocket/ws/game/${gameId}?player_id=${playerId}`;
+        const url = `${serverUrl}/api/v1/websocket/ws/game/${gameId}?player_id=${playerId}`;
         console.log('Connecting to game WebSocket at:', url);
         this.connectPlayerWebSocket(url);
     }
 
-    connectMatchmaking(baseUrl?: string) {
+    connectMatchmaking(playerId: string, baseUrl?: string) {
         // Use environment-specific base URL or default to localhost
         const serverUrl = baseUrl || this.getWebSocketBaseUrl();
-        const url = `${serverUrl}/api/v1/websocket/websocket/ws/matchmaking`;
+        const url = `${serverUrl}/api/v1/websocket/ws/matchmaking?player_id=${playerId}`;
         console.log('Connecting to matchmaking WebSocket at:', url);
         this.connectMatchmakingWebSocket(url);
     }
@@ -200,7 +200,7 @@ export class WebsocketService implements OnDestroy {
 
     connectTest(baseUrl?: string) {
         const serverUrl = baseUrl || this.getWebSocketBaseUrl();
-        const url = `${serverUrl}/api/v1/websocket/websocket/ws/test`;
+        const url = `${serverUrl}/api/v1/websocket/ws/test`;
         console.log('Connecting to test WebSocket at:', url);
         this.connectPlayerWebSocket(url);
     }
