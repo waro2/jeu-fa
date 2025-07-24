@@ -97,6 +97,7 @@ export class WebsocketService implements OnDestroy {
 
     private connectMatchmakingWebSocket(url: string) {
         this.currentMatchmakingUrl = url;
+        this.statusSubject.next('CONNECTING');
 
         if (this.matchmakingWs) {
             this.matchmakingWs.close();
@@ -108,10 +109,12 @@ export class WebsocketService implements OnDestroy {
             
             this.matchmakingWs.onopen = () => {
                 console.log('Matchmaking WebSocket connection established');
+                this.statusSubject.next('OPEN');
             };
 
             this.matchmakingWs.onclose = (event: CloseEvent) => {
                 console.log('Matchmaking WebSocket connection closed, code:', event.code);
+                this.statusSubject.next('CLOSED');
                 
                 // Auto-reconnect after 3 seconds if not manually closed
                 if (event.code !== 1000) { // 1000 is normal closure
@@ -124,6 +127,7 @@ export class WebsocketService implements OnDestroy {
 
             this.matchmakingWs.onerror = (error: Event) => {
                 console.error('Matchmaking WebSocket error:', error);
+                this.statusSubject.next('ERROR');
             };
 
             this.matchmakingWs.onmessage = (event: MessageEvent) => {
@@ -131,17 +135,18 @@ export class WebsocketService implements OnDestroy {
             };
         } catch (error) {
             console.error('Error creating matchmaking WebSocket connection:', error);
+            this.statusSubject.next('ERROR');
         }
     }
 
     private handleWebSocketMessage(event: MessageEvent, source: 'player' | 'matchmaking') {
         try {
-            console.log(`Raw WebSocket message received from ${source}:`, event.data);
             let parsedData;
             
             // Try to parse as JSON
             try {
                 parsedData = JSON.parse(event.data);
+                console.log(parsedData)
             } catch (parseError) {
                 console.warn('Failed to parse WebSocket message as JSON:', parseError);
                 
