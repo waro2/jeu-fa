@@ -32,6 +32,7 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
   private wsMsgSub?: Subscription;
   private timerInterval?: any;
   private queueTimeoutInterval?: any;
+  private lastPlayersRefresh?: number;
 
   constructor(private readonly router: Router, private readonly ws: WebsocketService, private readonly authService: AuthService) { }
 
@@ -41,24 +42,23 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
     
     // Connect to the matchmaking WebSocket endpoint
     const playerId = this.authService.getUserId();
-    
+
     if (!playerId) {
       console.error('Cannot connect to matchmaking WebSocket: No player ID available. User must be logged in.');
       // You might want to redirect to login or show an error message
       return;
     }
-    console.log('Connecting to matchmaking WebSocket for player ID:', playerId);
     this.ws.connectMatchmaking(playerId);
 
     // Monitor WebSocket status and update UI accordingly
     this.wsStatusSub = this.ws.status$.subscribe((status: WebSocketStatus) => {
       this.wsStatus = status;
-
-      console.log('WebSocket status:', status);
       
+      console.log('WebSocket status:', status);
       if (status === 'OPEN') {
         // Matchmaking WebSocket is connected, ready for queue operations
-        console.log('Matchmaking WebSocket connected - ready for matchmaking');
+        // Request the list of online players when connection is established
+        this.requestOnlinePlayers();
       } else {
         // If connection is closed/failed, use demo data
         this.setDemoPlayers();
@@ -75,6 +75,15 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
       if (this.inQueue) {
         // This will trigger change detection to update the timer display
         this.getWaitTimeString();
+      }
+      
+      // Also periodically refresh the online players list (every 30 seconds)
+      if (this.wsStatus === 'OPEN' && !this.usingDemoData) {
+        const now = Date.now();
+        if (!this.lastPlayersRefresh || (now - this.lastPlayersRefresh) > 30000) {
+          this.requestOnlinePlayers();
+          this.lastPlayersRefresh = now;
+        }
       }
     }, 1000); // Update every second
   }
@@ -110,15 +119,24 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
         break;
         
       case 'online_players':
+      case 'connected_players':
+      case 'players_list':
         this.handleOnlinePlayers(msg);
         break;
         
       case 'player_joined':
+      case 'player_connected':
         this.handlePlayerJoined(msg);
         break;
         
       case 'player_left':
+      case 'player_disconnected':
         this.handlePlayerLeft(msg);
+        break;
+        
+      case 'queue_update':
+      case 'queue_status':
+        this.handleQueueUpdate(msg);
         break;
         
       default:
@@ -166,7 +184,6 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
    * Handle online players list update
    */
   private handleOnlinePlayers(msg: any) {
-    
     // Different server implementations might format the response differently
     // Try different possible data structures
     let playersData = null;
@@ -181,15 +198,14 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
     }
     
     if (playersData && Array.isArray(playersData)) {
-      
       // Make sure each player has the required fields
-      const validPlayers = playersData.filter(p => p?.pseudo)
+      const validPlayers = playersData.filter(p => p?.pseudo || p?.username || p?.name)
         .map(p => ({
-          id: p.id || `player-${Math.random().toString(36).substring(2, 11)}`,
-          pseudo: p.pseudo,
+          id: p.id || p.user_id || `player-${Math.random().toString(36).substring(2, 11)}`,
+          pseudo: p.pseudo || p.username || p.name,
           avatar: p.avatar || 'assets/images/boconon-okpele.png',
-          status: p.status || 'Disponible',
-          rating: p.rating
+          status: p.status || p.state || 'Disponible',
+          rating: p.rating || p.elo
         }));
       
       if (validPlayers.length > 0) {
@@ -199,11 +215,9 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
       }
     }
     
-    // If we couldn't find any valid players data
+    // If we couldn't find any valid players data and we don't have any current players
     if (!this.usingDemoData && this.players.length === 0) {
-      // If we don't have any current players and we're not using demo data,
-      // switch to an empty array (real empty state)
-      this.players = [];
+      this.setDemoPlayers();
     }
   }
   
@@ -269,6 +283,21 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Handle queue update messages (players joining/leaving queue)
+   */
+  private handleQueueUpdate(msg: any) {
+    // This could contain information about players in queue
+    // Update the UI accordingly
+    if (msg.data?.players_in_queue) {
+      // If the server sends info about who's in queue, we can show that
+    }
+    
+    if (msg.data?.queue_size) {
+      // Update queue size display if needed
+    }
+  }
+
   joinQueue() {
     if (this.wsStatus === 'OPEN') {
       const playerId = this.authService.getUserId();
@@ -288,7 +317,6 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
         if (this.inQueue) {
           this.leaveQueue();
           // You can add a notification here to inform the user
-          console.log('Queue timeout: No match found after 1 minute, leaving queue');
         }
       }, 60 * 1000); // 60 seconds = 1 minute
     }
@@ -334,12 +362,10 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
    */
   refreshPlayersList() {
     if (this.wsStatus === 'OPEN') {
-      // Since we're using matchmaking WebSocket, we can't get online players
-      // Just keep the current demo data or show a message
-      console.log('Refreshing players list - using demo data since matchmaking endpoint doesn\'t support get_online_players');
-      this.setDemoPlayers();
+      // Request fresh online players data from the server
+      this.requestOnlinePlayers();
     } else {
-      // Reconnect and then use demo data
+      // If not connected, try to reconnect and then request players
       this.ws.reconnect();
       this.setDemoPlayers();
     }
@@ -369,5 +395,15 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
       { id: '4', pseudo: 'StratPro', avatar: 'assets/images/avatar4.png', status: 'Disponible' }
     ];
     this.usingDemoData = true;
+  }
+  
+  /**
+   * Request the list of online players from the server
+   */
+  private requestOnlinePlayers() {
+    if (this.wsStatus === 'OPEN') {
+      // Send a message to get online players
+      this.ws.sendMessage('get_online_players', {});
+    }
   }
 }

@@ -32,6 +32,7 @@ export class WebsocketService implements OnDestroy {
         const serverUrl = baseUrl || this.getWebSocketBaseUrl();
         const url = `${serverUrl}/api/v1/websocket/ws/matchmaking?player_id=${playerId}`;
         console.log('Connecting to matchmaking WebSocket at:', url);
+        console.log('Player ID type:', typeof playerId, 'Player ID value:', playerId);
         this.connectMatchmakingWebSocket(url);
     }
     
@@ -106,13 +107,26 @@ export class WebsocketService implements OnDestroy {
         try {
             this.matchmakingWs = new WebSocket(url);
             console.log('Matchmaking WebSocket connecting to:', url);
+            console.log('WebSocket ready state after creation:', this.matchmakingWs.readyState);
+            
+            // Add a connection timeout
+            const connectionTimeout = setTimeout(() => {
+                if (this.matchmakingWs && this.matchmakingWs.readyState === WebSocket.CONNECTING) {
+                    console.error('Matchmaking WebSocket connection timeout after 10 seconds');
+                    console.log('WebSocket ready state on timeout:', this.matchmakingWs.readyState);
+                    this.matchmakingWs.close();
+                    this.statusSubject.next('ERROR');
+                }
+            }, 10000); // 10 second timeout
             
             this.matchmakingWs.onopen = () => {
+                clearTimeout(connectionTimeout);
                 console.log('Matchmaking WebSocket connection established');
                 this.statusSubject.next('OPEN');
             };
 
             this.matchmakingWs.onclose = (event: CloseEvent) => {
+                clearTimeout(connectionTimeout);
                 console.log('Matchmaking WebSocket connection closed, code:', event.code);
                 this.statusSubject.next('CLOSED');
                 
@@ -126,6 +140,7 @@ export class WebsocketService implements OnDestroy {
             };
 
             this.matchmakingWs.onerror = (error: Event) => {
+                clearTimeout(connectionTimeout);
                 console.error('Matchmaking WebSocket error:', error);
                 this.statusSubject.next('ERROR');
             };
