@@ -93,19 +93,8 @@
 
       <!-- Player list component -->
       <app-player-list [players]="players" [usingDemoData]="usingDemoData"></app-player-list>
-      
-      <!-- Demo data indicator -->
-      <div *ngIf="usingDemoData" class="mt-2 text-center">
-        <p class="text-sm text-amber-600 bg-amber-50 rounded-lg py-1 px-3 inline-block border border-amber-200">
-          <svg class="w-4 h-4 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-          </svg>
-          Données de démonstration (serveur non connecté)
-        </p>
-      </div>
-      
       <!-- Refresh button for player list -->
-      <div *ngIf="wsStatus === 'OPEN'" class="mt-2 text-center">
+      <div *ngIf="wsStatus === 'OPEN'" class="mt-6 text-center">
         <button (click)="refreshPlayersList()" 
                 class="bg-amber-100 hover:bg-amber-200 text-amber-700 font-medium py-1 px-4 rounded-lg transition-colors duration-300 text-sm">
           <div class="flex items-center gap-2">
