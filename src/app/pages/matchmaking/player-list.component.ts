@@ -1,6 +1,9 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { WebsocketService } from '../../services/websocket.service';
+import { UtilsService } from '../../services/utils.service';
+import { AuthService } from '../../services/auth.service';
 
 export interface Player {
   id?: string;
@@ -15,17 +18,46 @@ export interface Player {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './player-list.component.html',
-  styleUrls: ['./player-list.component.scss']
+  styleUrls: ['./player-list.component.scss'],
 })
 export class PlayerListComponent {
   @Input() players: Player[] = [];
+  @Input() connected_users: Player[] = [];
   @Input() usingDemoData = false;
-  
+
+  get isMoreThanOneUser() {
+    return this.connected_users.length > 1;
+  }
+
+  private readonly utils = inject(UtilsService);
+  private readonly authService = inject(AuthService)
+  private readonly ws: WebsocketService = inject(WebsocketService);
+
   /**
    * Handle image loading errors
    */
   onImageError(event: Event) {
     const img = event.target as HTMLImageElement;
     img.src = 'assets/images/boconon-okpele.png';
+  }
+
+  ngOnInit() {
+    this.ws.messageSubject.subscribe((response) => {
+      if (response?.data?.type === 'online_players_response') {
+        const userId = this.authService.getUserId() ?? '';
+        this.connected_users = this.utils.getUsersExceptMe(this.mapConnectedUsers(
+          response?.data?.data?.connected_users
+        ), userId);
+      }
+    });
+  }
+
+  mapConnectedUsers(connectedUsers: any[]) {
+    return connectedUsers.map((player: any) => ({
+      id: player.player_id,
+      pseudo: player.name || player.pseudo || '',
+      avatar: player.avatar || 'assets/images/boconon-okpele.png',
+      status: player.status || '',
+    }));
   }
 }
