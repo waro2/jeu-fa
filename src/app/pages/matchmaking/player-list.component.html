@@ -1,7 +1,7 @@
 <!-- Standalone Players List Component -->
-<div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-orange-100">
+<div class="bg-white/90 mb-6 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-orange-100">
   <h3 class="text-xl font-bold text-amber-800 mb-4 flex items-center gap-2">
-    👥 Joueur <span *ngIf="isMoreThanOneUser">s</span> connecté <span *ngIf="isMoreThanOneUser">s</span> ({{connected_users.length}})
+    {{ title }} ({{connected_users.length}})
     <span *ngIf="!usingDemoData" class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
       <div class="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
       En ligne

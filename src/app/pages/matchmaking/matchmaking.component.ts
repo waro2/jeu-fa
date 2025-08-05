@@ -16,6 +16,7 @@ import { PlayerListComponent, Player } from './player-list.component';
 export class MatchmakingComponent implements OnInit, OnDestroy {
   // Live players data from WebSocket
   players: Player[] = [];
+  playersInQueue: Player[] = []
   
 
   // Indicate if we're using demo data

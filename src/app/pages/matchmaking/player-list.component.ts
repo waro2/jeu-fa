@@ -24,6 +24,7 @@ export class PlayerListComponent {
   @Input() players: Player[] = [];
   @Input() connected_users: Player[] = [];
   @Input() usingDemoData = false;
+  @Input() title = ''
 
   get isMoreThanOneUser() {
     return this.connected_users.length > 1;
@@ -43,7 +44,17 @@ export class PlayerListComponent {
 
   ngOnInit() {
     this.ws.messageSubject.subscribe((response) => {
-      if (response?.data?.type === 'online_players_response') {
+      console.log(response?.data?.status)
+       const match_found = response?.data?.status === "match_found"
+       const player_id = response?.data?.player_id
+       const opponent_id = response?.data?.opponent_id
+       const is_online_players_response = response?.data?.type === 'online_players_response'
+
+       if (match_found) {
+        
+       }
+
+      if (is_online_players_response) {
         const userId = this.authService.getUserId() ?? '';
         this.connected_users = this.utils.getUsersExceptMe(this.mapConnectedUsers(
           response?.data?.data?.connected_users
