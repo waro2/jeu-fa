@@ -1,18 +1,14 @@
 <!-- Standalone Players List Component -->
 <div class="bg-white/90 mb-6 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-orange-100">
   <h3 class="text-xl font-bold text-amber-800 mb-4 flex items-center gap-2">
-    {{ title }} ({{connected_users.length}})
+    {{ title }} ({{players.length}})
     <span *ngIf="!usingDemoData" class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
       <div class="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
       En ligne
     </span>
-    <span *ngIf="usingDemoData" class="inline-flex items-center px-2 py-1 text-xs font-medium bg-amber-100 text-amber-700 rounded-full">
-      <div class="w-2 h-2 bg-amber-500 rounded-full mr-1"></div>
-      Démo
-    </span>
   </h3>
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-    <div *ngFor="let user of connected_users" 
+    <div *ngFor="let user of players" 
          class="flex items-center gap-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-200 hover:shadow-md transition-all duration-300">
       <div class="relative">
         <img [src]="user.avatar" alt="Avatar" 
@@ -20,12 +16,19 @@
              (error)="onImageError($event)" />
         <div class="absolute -bottom-1 -right-1 w-3 h-3 rounded-full" 
              [ngClass]="{'bg-green-500': !usingDemoData, 'bg-amber-400': usingDemoData}"
-             title="{{ usingDemoData ? 'Demo data' : 'Connected player' }}"
+             title="Connected player"
              aria-hidden="true"></div>
       </div>
-      <div class="flex flex-col">
+      <div class="flex flex-col flex-1">
         <span class="font-medium text-amber-800 text-sm">{{ user.pseudo }}</span>
         <span *ngIf="user.status" class="text-xs text-amber-600">{{ user.status }}</span>
+      </div>
+      <div *ngIf="user.id !== authService.getUserId()" class="flex justify-end ml-auto">
+        <button 
+          class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition-colors duration-200"
+          (click)="sendInvitation()">
+          Inviter le joueur
+        </button>
       </div>
     </div>
   </div>
@@ -33,7 +36,6 @@
   <!-- Empty state -->
   <div *ngIf="players.length === 0" class="text-center py-8">
     <div class="text-4xl mb-2">🔍</div>
-    <p *ngIf="!usingDemoData" class="text-amber-700/70">Aucun joueur connecté pour le moment</p>
-    <p *ngIf="usingDemoData" class="text-amber-700/70">Connexion au serveur en cours...</p>
+    <p class="text-amber-700/70">Aucun joueur connecté pour le moment</p>
   </div>
 </div>

@@ -14,10 +14,12 @@ import { PlayerListComponent, Player } from './player-list.component';
   styleUrls: ['./matchmaking.component.scss']
 })
 export class MatchmakingComponent implements OnInit, OnDestroy {
+  showQueuePlayers = false;
   // Live players data from WebSocket
   players: Player[] = [];
   playersInQueue: Player[] = []
-  
+
+  match_queues: Player[] = []
 
   // Indicate if we're using demo data
   usingDemoData = false;
@@ -38,9 +40,6 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
   constructor(private readonly router: Router, private readonly ws: WebsocketService, private readonly authService: AuthService) { }
 
   ngOnInit() {
-    // Set demo data by default
-    this.setDemoPlayers();
-    
     // Connect to the matchmaking WebSocket endpoint
     const playerId = this.authService.getUserId();
 
@@ -87,6 +86,21 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
         }
       }
     }, 1000); // Update every second
+
+    this.ws.messageSubject.subscribe((res)=> {
+       const match_found = res?.data?.status === "match_found"
+
+       if (match_found) {
+       const opponent = res?.data?.opponent
+       this.match_queues.push({
+        pseudo: opponent?.name,
+        status: 'connected',
+        avatar: opponent?.avatar 
+       })
+
+       console.log(this.match_queues)
+       }
+    })
   }
 
   ngOnDestroy() {
@@ -168,6 +182,7 @@ export class MatchmakingComponent implements OnInit, OnDestroy {
    * Handle match found event
    */
   private handleMatchFound(msg: any) {
+    this.showQueuePlayers = true;
     // Clear the queue timeout since match was found
     if (this.queueTimeoutInterval) {
       clearTimeout(this.queueTimeoutInterval);
