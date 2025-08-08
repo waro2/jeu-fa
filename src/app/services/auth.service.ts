@@ -36,7 +36,6 @@ export class AuthService {
      */
     getUserInfo(): UserInfo | null {
         const userStr = localStorage.getItem(this.USER_KEY);
-        console.log('Retrieved user info:', userStr);
         return userStr ? JSON.parse(userStr) : null;
     }
 
@@ -57,14 +56,12 @@ export class AuthService {
      */
     login(token: string, userInfo: UserInfo) {
         this.setToken(token, userInfo);
-        console.log('User logged in:', userInfo);
     }
 
     /**
      * Logout and close WebSocket connections
      */
     logout() {
-        console.log('Logging out user');
         this.ws.close(); // Close WebSocket connection
         localStorage.removeItem(this.TOKEN_KEY);
         localStorage.removeItem(this.USER_KEY);
@@ -74,7 +71,6 @@ export class AuthService {
      * Establish WebSocket connection for the authenticated user
      */
     private connectUserToWebSocket(userId: string) {
-        console.log('Establishing WebSocket connection for user:', userId);
         // Connect to the player WebSocket endpoint to register as online
         this.ws.connectPlayer(userId);
     }
@@ -85,7 +81,6 @@ export class AuthService {
     reconnectWebSocket() {
         const userId = this.getUserId();
         if (userId) {
-            console.log('Reconnecting WebSocket for user:', userId);
             this.connectUserToWebSocket(userId);
         }
     }

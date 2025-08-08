@@ -48,10 +48,8 @@ export class AppComponent implements OnInit {
   private establishWebSocketForAuthenticatedUser(): void {
     if (this.authService.isLoggedIn()) {
       const userInfo = this.authService.getUserInfo();
-      console.log('App initialized - Found authenticated user:', userInfo);
       
       if (userInfo?.id) {
-        console.log('Establishing WebSocket connection for authenticated user:', userInfo.id);
         this.authService.reconnectWebSocket();
       }
     }
