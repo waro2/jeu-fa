@@ -50,6 +50,39 @@
   <!-- Main Game Area -->
   <main class="relative z-10 container mx-auto px-6 py-8">
     
+    <!-- Game Details Section -->
+    <div *ngIf="gameDetails?.data" class="mb-8 p-6 rounded-2xl bg-gradient-to-br from-amber-900/80 to-orange-900/80 border border-amber-400/40 shadow-xl">
+      <h2 class="text-2xl font-bold text-amber-100 mb-4 flex items-center gap-2">
+        <svg class="w-6 h-6 text-orange-300" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Détails de la partie
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-black/30 rounded-xl p-4 flex flex-col items-center">
+          <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mb-2">
+            1
+          </div>
+          <h3 class="text-lg font-bold text-orange-200 mb-1">{{ player1DisplayName }}</h3>
+          <p class="text-amber-200/80 text-sm">ID: {{ player1DisplayId }}</p>
+          <p class="text-amber-200/80 text-sm">PFH: {{ player1DisplayPfh }}</p>
+        </div>
+        <div class="bg-black/30 rounded-xl p-4 flex flex-col items-center">
+          <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mb-2">
+            2
+          </div>
+          <h3 class="text-lg font-bold text-orange-200 mb-1">{{ player2DisplayName }}</h3>
+          <p class="text-amber-200/80 text-sm">ID: {{ player2DisplayId }}</p>
+          <p class="text-amber-200/80 text-sm">PFH: {{ player2DisplayPfh }}</p>
+        </div>
+      </div>
+      <div class="mt-6 text-center">
+        <span class="inline-block px-4 py-2 rounded-full bg-orange-700/60 text-amber-100 font-semibold text-lg shadow">
+          Tour actuel: {{ gameDetails.data.current_turn }} • Mode: {{ gameDetails.data.mode }} • Statut: {{ gameDetails.data.is_completed ? 'Terminé' : 'En cours' }}
+        </span>
+      </div>
+    </div>
+
     <!-- Players Dashboard -->
     <div class="grid md:grid-cols-2 gap-6 mb-8">
       <!-- Player 1 Dashboard -->
@@ -60,8 +93,8 @@
               1
             </div>
             <div>
-              <h3 class="text-xl font-bold text-amber-100">Joueur 1</h3>
-              <p class="text-amber-200/80 text-sm">PFH: {{ playerStates.player1.pfh }}</p>
+              <h3 class="text-xl font-bold text-amber-100"> {{player1DisplayName}} </h3>
+              <p class="text-amber-200/80 text-sm">PFH: {{ player1DisplayPfh }}</p>
             </div>
           </div>
           <div class="text-right">
@@ -128,8 +161,8 @@
               2
             </div>
             <div>
-              <h3 class="text-xl font-bold text-amber-100">Joueur 2</h3>
-              <p class="text-amber-200/80 text-sm">PFH: {{ playerStates.player2.pfh }}</p>
+              <h3 class="text-xl font-bold text-amber-100">{{ player2DisplayName }}</h3>
+              <p class="text-amber-200/80 text-sm">PFH: {{ player2DisplayPfh }}</p>
             </div>
           </div>
           <div class="text-right">

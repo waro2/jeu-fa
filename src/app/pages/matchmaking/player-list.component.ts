@@ -4,6 +4,7 @@ import { WebsocketService } from '../../services/websocket.service';
 import { UtilsService } from '../../services/utils.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { DialogComponent } from '../../components/dialog/dialog.component';
 
 export interface Player {
   id?: string;
@@ -16,7 +17,7 @@ export interface Player {
 @Component({
   selector: 'app-player-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, DialogComponent],
   templateUrl: './player-list.component.html',
   styleUrls: ['./player-list.component.scss'],
 })
@@ -34,6 +35,13 @@ export class PlayerListComponent {
   private readonly ws: WebsocketService = inject(WebsocketService);
   private readonly router = inject(Router);
 
+  showDialog = false;
+  dialogTitle = '';
+  dialogMessage = '';
+  dialogConfirmText = '';
+  dialogCancelText = '';
+  private dialogConfirmCallback: (() => void) | null = null;
+
   /**
    * Handle image loading errors
    */
@@ -42,21 +50,73 @@ export class PlayerListComponent {
     img.src = 'assets/images/boconon-okpele.png';
   }
 
+  openDialog(title: string, message: string, confirmText: string, cancelText: string, onConfirm: () => void) {
+    this.dialogTitle = title;
+    this.dialogMessage = message;
+    this.dialogConfirmText = confirmText;
+    this.dialogCancelText = cancelText;
+    this.dialogConfirmCallback = onConfirm;
+    this.showDialog = true;
+  }
+
+  onDialogConfirm() {
+    if (this.dialogConfirmCallback) {
+      this.dialogConfirmCallback();
+    }
+    this.showDialog = false;
+  }
+
+  onDialogCancel() {
+    this.showDialog = false;
+  }
+
   handleInvitationReceived(response: any) {
     const fromPlayerId = response?.data?.from_player_id;
     const gameId = response?.data?.game_id;
+    const playerId = this.authService.getUserId();
 
-    const acceptInvitation = confirm(`Vous avez reçu une invitation du joueur ${fromPlayerId} pour la partie ${gameId}. Acceptez-vous ?`);
+    this.openDialog(
+      'Invitation Received',
+      `Vous avez reçu une invitation du joueur ${fromPlayerId} pour la partie ${gameId}. Acceptez-vous ?`,
+      'Accept',
+      'Decline',
+      () => {
+        this.ws.send(JSON.stringify({
+          type: 'accept_invitation',
+          data: {
+            from_player_id: fromPlayerId,
+            opponent_id: fromPlayerId,
+            player_id: playerId,
+            game_id: gameId,
+          },
+        }));
+      }
+    );
+  }
 
-    if (acceptInvitation) {
-      this.ws.send(JSON.stringify({
-        type: 'accept_invitation',
-        data: {
-          from_player_id: fromPlayerId,
-          game_id: gameId,
-        },
-      }));
-    }
+  handleMatchPossible(response: any) {
+    const opponentId = response?.data?.opponent_id;
+    const message = response?.data?.message;
+
+    this.openDialog(
+      'Match Possible',
+      message,
+      'Invite',
+      'Cancel',
+      () => {
+        const player_id = this.authService.getUserId();
+        if (player_id && opponentId) {
+          this.ws.send(JSON.stringify({
+            type: 'invite_player',
+            data: {
+              player_id,
+              opponent_id: opponentId,
+              game_id: undefined, // Optionally, generate or fetch a game_id here if needed
+            },
+          }));
+        }
+      }
+    );
   }
 
   ngOnInit() {
@@ -64,8 +124,24 @@ export class PlayerListComponent {
       const type = response?.data?.type;
 
       console.log('WebSocket message received:', response);
-      if (response?.type === 'matchmaking_status' && type === 'invitation_received') {
-        this.handleInvitationReceived(response);
+      if (response?.type === 'matchmaking_status') {
+        if (type === 'invitation_received') {
+          this.handleInvitationReceived(response);
+        } else if (type === 'match_possible') {
+          this.handleMatchPossible(response);
+        } else if (type === 'invitation_accepted') {
+          const gameId = response?.data?.game_id;
+          const playerId = this.authService.getUserId();
+          const opponentId = response?.data?.from_player_id;
+          // Pass all necessary data via navigation extras or params
+          this.router.navigate([`/game/${gameId}`], {
+            queryParams: {
+              player_id: playerId,
+              opponent_id: opponentId,
+              game_id: gameId
+            }
+          });
+        }
       }
 
       if (type === 'game_created') {
