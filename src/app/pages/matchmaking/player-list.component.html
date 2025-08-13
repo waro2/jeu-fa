@@ -39,3 +39,13 @@
     <p class="text-amber-700/70">Aucun joueur connecté pour le moment</p>
   </div>
 </div>
+
+<app-dialog 
+  *ngIf="showDialog"
+  [title]="dialogTitle"
+  [message]="dialogMessage"
+  [confirmText]="dialogConfirmText"
+  [cancelText]="dialogCancelText"
+  (confirm)="onDialogConfirm()"
+  (cancel)="onDialogCancel()">
+</app-dialog>
