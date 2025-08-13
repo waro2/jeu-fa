@@ -1,19 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Observable} from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import type {
-  PlayerType,
-  Strategy,
-  FaduCard,
-  SacrificeResult,
-  StrategySelection,
-  StrategyOption,
-  Player,
-  GameTurn,
-  GameState
+  Strategy
 } from '../interfaces/game.interface';
 
 @Injectable({ providedIn: 'root' })
 export class GameService {
+  private readonly apiBaseUrl = 'http://localhost:3000';
   // Matrice de gains (statique, accessible partout)
   private readonly gainMatrix = {
     VV: (X: number, Y: number, params: any) => [
@@ -63,6 +57,8 @@ export class GameService {
     a: 0.0, b: 0.0, c: 0.2, d: 0.2, e: 0.3, f: 0.8
   };
 
+  constructor(private readonly http: HttpClient) {}
+
   // Utilitaire public pour tous les calculs de gains
   computeGains(strat1: Strategy, strat2: Strategy, X: number, Y: number): [number, number] {
     const key = (strat1 + strat2) as keyof typeof this.gainMatrix;
@@ -72,5 +68,9 @@ export class GameService {
     return [Math.max(g1, 0), Math.max(g2, 0)];
   }
 
-  // ...existing code...
+  fetchGameDetails(gameId: number, token: string): Observable<any> {
+    return this.http.get(`${this.apiBaseUrl}/api/v1/game_actions/${gameId}/status`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
 }

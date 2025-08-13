@@ -1,10 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FaduCardComponent, FaduCard } from './components/fadu-card/fadu-card.component';
 import { StrateggySelectorComponent } from './components/strateggy-selector/strateggy-selector.component';
 import { WebsocketService, WebSocketStatus } from '../../services/websocket.service';
 import { Subscription } from 'rxjs';
+import { GameService } from './services/game.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
     selector: 'app-game-board',
@@ -108,12 +110,35 @@ export class GameBoardComponent implements OnInit, OnDestroy {
     wsMessages: any[] = [];
     private wsStatusSub?: Subscription;
     private wsMsgSub?: Subscription;
-    gameId: number = 1; // Replace with actual gameId logic
-    playerId: number = 1; // Replace with actual playerId logic
+    gameId: number = 1;
+    playerId: number = 1;
+    opponentId: number = 2;
 
-    constructor(private readonly ws: WebsocketService, private readonly router: Router) {}
+    player1: any = null;
+    player2: any = null;
+    gameDetails: any = null;
+    token: string = '';
+
+    constructor(
+        private readonly ws: WebsocketService,
+        private readonly router: Router,
+        private readonly route: ActivatedRoute,
+        private readonly gameService: GameService,
+        private readonly http: HttpClient
+    ) {}
 
     ngOnInit() {
+        this.route.paramMap.subscribe(params => {
+            this.gameId = Number(params.get('gameId'));
+        });
+        this.route.queryParamMap.subscribe(params => {
+            this.playerId = Number(params.get('player_id'));
+            this.opponentId = Number(params.get('opponent_id'));
+        });
+        this.token = localStorage.getItem('auth_token') || '';
+        this.fetchGameDetails();
+        this.fetchPlayers();
+
         // Connect to the game WebSocket endpoint
         this.ws.connectGame(this.gameId.toString(), this.playerId.toString());
         this.wsStatusSub = this.ws.status$.subscribe((status: WebSocketStatus) => {
@@ -132,6 +157,36 @@ export class GameBoardComponent implements OnInit, OnDestroy {
         this.wsStatusSub?.unsubscribe();
         this.wsMsgSub?.unsubscribe();
         this.ws.close();
+    }
+
+    fetchGameDetails() {
+        console.log("Fetching game details...");
+        if (!this.gameId || !this.token) return;
+        this.gameService.fetchGameDetails(this.gameId, this.token).subscribe({
+            next: (data) => {
+                this.gameDetails = data;
+                console.log('Game details:', data);
+            },
+            error: (err) => {
+                console.error('Failed to fetch game details:', err);
+            }
+        });
+    }
+
+    fetchPlayers() {
+        // Replace with actual API call to backend
+        this.ws.sendMessage('get_players', {
+            game_id: this.gameId,
+            player_id: this.playerId,
+            opponent_id: this.opponentId
+        });
+        this.wsMsgSub = this.ws.messages$.subscribe((msg: any) => {
+            if (msg.type === 'players_info') {
+                this.player1 = msg.data.player1;
+                this.player2 = msg.data.player2;
+            }
+            this.handleWsMessage(msg);
+        });
     }
 
     handleWsMessage(msg: any) {
