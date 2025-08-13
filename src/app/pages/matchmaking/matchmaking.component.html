@@ -92,7 +92,7 @@
       </div>
 
       <!-- Player list component -->
-       @if(match_queues?.length){
+       @if(match_queues.length){
         <app-player-list title="Joueurs en attente" [players]="match_queues" ></app-player-list>
        }
       <app-player-list title="Joueurs en ligne" [players]="players" ></app-player-list>

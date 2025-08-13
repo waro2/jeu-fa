@@ -59,13 +59,38 @@ export class PlayerListComponent {
     }
   }
 
+  handleMatchPossible(response: any) {
+    const opponentId = response?.data?.opponent_id;
+    const message = response?.data?.message;
+
+    const inviteOpponent = confirm(`${message} Voulez-vous inviter ce joueur ?`);
+
+    if (inviteOpponent) {
+      const player_id = this.authService.getUserId();
+      if (player_id && opponentId) {
+        this.ws.send(JSON.stringify({
+          type: 'invite_player',
+          data: {
+            player_id,
+            opponent_id: opponentId,
+            game_id: undefined, // Optionally, generate or fetch a game_id here if needed
+          },
+        }));
+      }
+    }
+  }
+
   ngOnInit() {
     this.ws.messageSubject.subscribe((response) => {
       const type = response?.data?.type;
 
       console.log('WebSocket message received:', response);
-      if (response?.type === 'matchmaking_status' && type === 'invitation_received') {
-        this.handleInvitationReceived(response);
+      if (response?.type === 'matchmaking_status') {
+        if (type === 'invitation_received') {
+          this.handleInvitationReceived(response);
+        } else if (type === 'match_possible') {
+          this.handleMatchPossible(response);
+        }
       }
 
       if (type === 'game_created') {
