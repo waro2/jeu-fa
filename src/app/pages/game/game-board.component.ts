@@ -119,6 +119,13 @@ export class GameBoardComponent implements OnInit, OnDestroy {
     gameDetails: any = null;
     token: string = '';
 
+    player1DisplayName = 'Loading...';
+    player2DisplayName = 'Loading...';
+    player1DisplayId = '';
+    player2DisplayId = '';
+    player1DisplayPfh = '100';
+    player2DisplayPfh = '100';
+
     constructor(
         private readonly ws: WebsocketService,
         private readonly router: Router,
@@ -136,6 +143,7 @@ export class GameBoardComponent implements OnInit, OnDestroy {
             this.opponentId = Number(params.get('opponent_id'));
         });
         this.token = localStorage.getItem('auth_token') || '';
+        this.playerId = Number(localStorage.getItem('user_id')) || this.playerId;
         this.fetchGameDetails();
         this.fetchPlayers();
 
@@ -160,12 +168,33 @@ export class GameBoardComponent implements OnInit, OnDestroy {
     }
 
     fetchGameDetails() {
-        console.log("Fetching game details...");
-        if (!this.gameId || !this.token) return;
+        if (!this.gameId || !this.token) {
+            console.log("Missing gameId or token");
+            return;
+        }
         this.gameService.fetchGameDetails(this.gameId, this.token).subscribe({
             next: (data) => {
                 this.gameDetails = data;
-                console.log('Game details:', data);
+                // Determine which player is the logged-in user
+                const p1 = data.data.player1;
+                const p2 = data.data.player2;
+                
+                if (String(p1.id) === String(this.playerId)) {
+                    this.player1DisplayName = p1.username || 'Player 1';
+                    this.player1DisplayId = String(p1.id);
+                    this.player1DisplayPfh = String(p1.current_pfh);
+                    this.player2DisplayName = p2.username || 'Player 2';
+                    this.player2DisplayId = String(p2.id);
+                    this.player2DisplayPfh = String(p2.current_pfh);
+                } else {
+                    this.player1DisplayName = p2.username || 'Player 2';
+                    this.player1DisplayId = String(p2.id);
+                    this.player1DisplayPfh = String(p2.current_pfh);
+                    this.player2DisplayName = p1.username || 'Player 1';
+                    this.player2DisplayId = String(p1.id);
+                    this.player2DisplayPfh = String(p1.current_pfh);
+                }
+                
             },
             error: (err) => {
                 console.error('Failed to fetch game details:', err);
@@ -197,7 +226,6 @@ export class GameBoardComponent implements OnInit, OnDestroy {
             // Example: this.updateGameState(msg.data);
         } else if (['turn_start', 'turn_result', 'game_end'].includes(msg.type)) {
             // Handle turn events and game end
-            console.log(`Received ${msg.type} event:`, msg);
         }
     }
 

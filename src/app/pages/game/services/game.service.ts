@@ -7,7 +7,7 @@ import type {
 
 @Injectable({ providedIn: 'root' })
 export class GameService {
-  private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly apiBaseUrl = 'http://localhost:8000';
   // Matrice de gains (statique, accessible partout)
   private readonly gainMatrix = {
     VV: (X: number, Y: number, params: any) => [
@@ -69,7 +69,7 @@ export class GameService {
   }
 
   fetchGameDetails(gameId: number, token: string): Observable<any> {
-    return this.http.get(`${this.apiBaseUrl}/api/v1/game_actions/${gameId}/status`, {
+    return this.http.get(`${this.apiBaseUrl}/api/v1/game/${gameId}/status`, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }
