@@ -129,6 +129,18 @@ export class PlayerListComponent {
           this.handleInvitationReceived(response);
         } else if (type === 'match_possible') {
           this.handleMatchPossible(response);
+        } else if (type === 'invitation_accepted') {
+          const gameId = response?.data?.game_id;
+          const playerId = this.authService.getUserId();
+          const opponentId = response?.data?.from_player_id;
+          // Pass all necessary data via navigation extras or params
+          this.router.navigate([`/game/${gameId}`], {
+            queryParams: {
+              player_id: playerId,
+              opponent_id: opponentId,
+              game_id: gameId
+            }
+          });
         }
       }
 
