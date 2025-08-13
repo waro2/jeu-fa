@@ -123,7 +123,6 @@ export class PlayerListComponent {
     this.ws.messageSubject.subscribe((response) => {
       const type = response?.data?.type;
 
-      console.log('WebSocket message received:', response);
       if (response?.type === 'matchmaking_status') {
         if (type === 'invitation_received') {
           this.handleInvitationReceived(response);

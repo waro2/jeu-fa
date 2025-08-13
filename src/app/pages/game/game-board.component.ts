@@ -169,7 +169,6 @@ export class GameBoardComponent implements OnInit, OnDestroy {
 
     fetchGameDetails() {
         if (!this.gameId || !this.token) {
-            console.log("Missing gameId or token");
             return;
         }
         this.gameService.fetchGameDetails(this.gameId, this.token).subscribe({
@@ -197,7 +196,7 @@ export class GameBoardComponent implements OnInit, OnDestroy {
                 
             },
             error: (err) => {
-                console.error('Failed to fetch game details:', err);
+                // Handle error silently or with user notification
             }
         });
     }
