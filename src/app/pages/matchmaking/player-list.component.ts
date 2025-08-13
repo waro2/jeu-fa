@@ -73,6 +73,7 @@ export class PlayerListComponent {
   handleInvitationReceived(response: any) {
     const fromPlayerId = response?.data?.from_player_id;
     const gameId = response?.data?.game_id;
+    const playerId = this.authService.getUserId();
 
     this.openDialog(
       'Invitation Received',
@@ -84,6 +85,8 @@ export class PlayerListComponent {
           type: 'accept_invitation',
           data: {
             from_player_id: fromPlayerId,
+            opponent_id: fromPlayerId,
+            player_id: playerId,
             game_id: gameId,
           },
         }));
